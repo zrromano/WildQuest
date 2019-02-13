@@ -40,7 +40,7 @@ class Game{
 		SDL_Quit();
 	}
 	
-	//Abstract mehtods defined by inheriting classes
+	//Abstract methods defined by inheriting classes
 	virtual void init()=0;
 	virtual void loop()=0;
 	
