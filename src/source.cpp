@@ -40,7 +40,7 @@ class Game{
 		SDL_Quit();
 	}
 	
-	//Abstract mehtods defined by inheriting classes
+	//Abstract methods defined by inheriting classes
 	virtual void init()=0;
 	virtual void loop()=0;
 	
@@ -86,7 +86,7 @@ class MyGame:public Game {
 			dest.y=x;
 			SDL_RenderCopy(this->getRenderer(), texture, &src, &dest);
 			SDL_RenderPresent(this->getRenderer());
-			SDL_Delay(16);  // Pause execution for 3000 milliseconds, for example
+			SDL_Delay(300);  // Pause execution for 3000 milliseconds, for example
 		}
 	}
 };
