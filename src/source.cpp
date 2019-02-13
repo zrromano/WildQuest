@@ -12,6 +12,9 @@ class Game{
 	public:
 	Game(string title, int width=1366, int height=768){
 		SDL_Init(SDL_INIT_VIDEO);
+		
+		window = NULL;
+		renderer = NULL;
 
 		window = SDL_CreateWindow(
 			title.c_str(),                  	// window title
@@ -26,14 +29,15 @@ class Game{
 			printf("Could not create window: %s\n", SDL_GetError());
 			return; 
 		}
+		cout << "window created" << endl;
 		
-		SDL_Renderer *renderer;
 		renderer = SDL_CreateRenderer(window, -1, 0);
 		if (renderer == NULL) {
 			// In the case that the renderer could not be made...
 			printf("Could not create renderer: %s\n", SDL_GetError());
 			return; 
 		}
+		cout << "renderer created" << endl;
 	}
 	~Game(){
 		SDL_DestroyWindow(window);
@@ -47,8 +51,10 @@ class Game{
 	SDL_Renderer *getRenderer(){ return renderer; }
 	SDL_Window *getWindow() { return window; }
 	void run(){
-		if (renderer == NULL || window == NULL) return;
+		if (renderer == NULL || window == NULL) {return;}
+		cout << "init" << endl;
 		init();
+		cout << "enter game loop" << endl;
 		loop();
 	}
 };
@@ -64,15 +70,17 @@ class Image{
 			printf("LoadBMP failed: %s\n", SDL_GetError());
 			return;
 		}
+		cout << "surface loaded" << endl;
 		
 		texture = SDL_CreateTextureFromSurface(game->getRenderer(), surface);
-		SDL_QueryTexture(texture,NULL,NULL,&(src.w),&(src.h));
+		SDL_QueryTexture(texture,NULL,NULL,&src.w,&src.h);
 		src.x=0;
 		src.y=0;
 		if (texture == NULL) {
 			fprintf(stderr, "CreateTextureFromSurface failed: %s\n", SDL_GetError());
 			return;
 		}
+		cout << "texture created" << endl;
 		
 		SDL_FreeSurface(surface);
 	}
@@ -97,7 +105,7 @@ class MyGame:public Game {
 	MyGame():Game("Wild Quest"){};
 	
     void init(){
-		background = new Image(this, "res/back.bmp");
+		background = new Image(this, "../res/back.bmp");
 	}
 	//Game loop, basic gameplay functionality goes here
 	void loop(){
@@ -107,6 +115,7 @@ class MyGame:public Game {
 			SDL_RenderPresent(renderer);
 			SDL_Delay(16);
 		}
+		cout << "exit game loop" << endl;
 	}
 };
 
@@ -116,7 +125,7 @@ int main(int argc, char* argv[]) {
 	g = new MyGame();
 	g->run();
 	delete g;
-	
+	cout << "press enter to end program..." << endl;
 	cin.get();
     return 0;
 }
