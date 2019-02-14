@@ -54,16 +54,17 @@ class Game{
 		if (renderer == NULL || window == NULL) {return;}
 		cout << "init" << endl;
 		init();
-		cout << "enter game loop" << endl;
 		loop();
 	}
 };
 
 class Image{
+	int x;
+	int y;
 	SDL_Texture *texture;
 	SDL_Rect src;
 	public:
-	Image(Game *game, string filename){
+	Image(Game *game, string filename, int _x=0, int _y=0){
 		SDL_Surface *surface;
 		surface=SDL_LoadBMP(filename.c_str());
 		if (surface == NULL) {
@@ -74,8 +75,8 @@ class Image{
 		
 		texture = SDL_CreateTextureFromSurface(game->getRenderer(), surface);
 		SDL_QueryTexture(texture,NULL,NULL,&src.w,&src.h);
-		src.x=0;
-		src.y=0;
+		src.x=_x;
+		src.y=_y;
 		if (texture == NULL) {
 			fprintf(stderr, "CreateTextureFromSurface failed: %s\n", SDL_GetError());
 			return;
@@ -83,9 +84,9 @@ class Image{
 		cout << "texture created" << endl;
 		
 		SDL_FreeSurface(surface);
-	}
+	};
 	
-	void Render(Game *game, int x=0, int y=0){
+	void Render(Game *game, int xVelocity=0, int yVelocity=0){
 			SDL_Rect dest;
 			dest.w = src.w;
 			dest.h = src.h;
@@ -96,24 +97,53 @@ class Image{
 	}
 	
 	SDL_Rect getSize(){ return src; }
+	int getX() { return x; }
+	int getY() { return y; }
 };
 
 class MyGame:public Game {
 	Image *background;
+	Image *player;
     SDL_Rect src,dest;
 	public:
 	MyGame():Game("Wild Quest"){};
 	
     void init(){
 		background = new Image(this, "../res/back.bmp");
+		player = new Image(this, "../res/characterSprite.bmp");
 	}
 	//Game loop, basic gameplay functionality goes here
 	void loop(){
-		for (int x=0;x<480;x++) {
-			SDL_Renderer *renderer = getRenderer();
-			background->Render(this,x,x);
-			SDL_RenderPresent(renderer);
-			SDL_Delay(16);
+		bool again = true;
+		SDL_Event event;
+		int xVelocity=0;
+		int yVelocity=0;
+		cout << "enter game loop" << endl;
+		while(again){
+			SDL_WaitEvent(&event);
+			if (event.type == SDL_KEYDOWN){
+				switch (event.key.keysym.sym){
+					case SDLK_LEFT:  
+						xVelocity -= 1;
+						cout << "left" << endl;
+						break;
+					case SDLK_RIGHT: 
+						xVelocity += 1;
+						cout << "right" << endl;
+						break;
+					case SDLK_UP:    
+						yVelocity += 1; 
+						cout << "up" << endl;
+						break;
+					case SDLK_DOWN:  
+						yVelocity -= 1;
+						cout << "down" << endl;
+						break;
+					case SDLK_ESCAPE:
+						again = false;
+						break;
+				}	
+			}
 		}
 		cout << "exit game loop" << endl;
 	}
