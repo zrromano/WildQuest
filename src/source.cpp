@@ -1,4 +1,4 @@
-
+//Note: strip command in command prompt will shrink filesize
 #include "SDL.h"
 #include <stdio.h>
 #include <iostream>
@@ -9,8 +9,11 @@ using namespace std;
 class Game{
 	SDL_Window *window;
 	SDL_Renderer *renderer;
+	SDL_Rect resolution;
 	public:
 	Game(string title, int width=1366, int height=768){
+		resolution.w = width;
+		resolution.h = height;
 		SDL_Init(SDL_INIT_VIDEO);
 		
 		window = NULL;
@@ -49,6 +52,7 @@ class Game{
 	virtual void loop()=0;
 	
 	SDL_Renderer *getRenderer(){ return renderer; }
+	SDL_Rect getResolution(){ return resolution; }
 	SDL_Window *getWindow() { return window; }
 	void run(){
 		if (renderer == NULL || window == NULL) {return;}
@@ -101,6 +105,7 @@ class Image{
 
 class Sprite:public Image {
 	float x,y,dx,dy,ax,ay;
+	int gw,gh;
 	public:
 	Sprite(Game *g, string filename, float _x=0.0, float _y=0.0, float _dx=0.0, float _dy=0.0, float _ax=0.0, float _ay=0.0):Image(g,filename) {
 		x = _x;
@@ -109,6 +114,9 @@ class Sprite:public Image {
 		dy = _dy;
 		ax = _ax;
 		ay = _ay;
+		SDL_Rect resolution = g->getResolution();
+		gw = resolution.w;
+		gh = resolution.h;
 	}
 	void update(float dt /* in ms */){
 		dt/=1000.0;
@@ -116,13 +124,16 @@ class Sprite:public Image {
 		dy = dy + ay * dt;
 		x = x + dx * dt;
 		y = y + dy * dt;
+		if(y>gh || y<gh) dy = 0;
+		if(x>gw || x<gw) dx = 0;
 	}
 	void render(Game *g, int setX=-1, int setY=-1){
 		if(setX != -1 && setY != -1) Image::Render(g, setX, setY);
 		else Image::Render(g,(int)x,(int)y);
 	}
 	
-	void setDX(float _dx) { dx = _dx; }
+	void accelerateX(float ddx) { dx += ddx; }
+	void accelerateY(float ddy) { dy += ddy; }
 };
 
 class MyGame:public Game {
@@ -137,48 +148,67 @@ class MyGame:public Game {
 	}
 	//Game loop, basic gameplay functionality goes here
 	void loop(){
-		unsigned start = SDL_GetTicks();
 		bool again = true;
 		SDL_Event event;
-		int xVelocity=0;
-		int yVelocity=0;
 		cout << "enter game loop" << endl;
 
+		unsigned start = SDL_GetTicks();
 		while(again){
 			unsigned end = SDL_GetTicks();
 			float dt = start - end;
 			start = end;
 			SDL_Renderer *renderer = this->getRenderer();
+			player->update(dt);
 			background->Render(this);
 			player->Render(this);
 			SDL_RenderPresent(renderer);	
 			
-			SDL_WaitEvent(&event);
-			if (event.type == SDL_KEYDOWN){
-				switch (event.key.keysym.sym){
-					case SDLK_LEFT:  
-						xVelocity -= 1;
-						cout << "left" << endl;
-						break;
-					case SDLK_RIGHT: 
-						xVelocity += 1;
-						cout << "right" << endl;
-						break;
-					case SDLK_UP:    
-						yVelocity -= 1; 
-						cout << "up" << endl;
-						break;
-					case SDLK_DOWN:  
-						yVelocity += 1;
-						cout << "down" << endl;
-						break;
-					case SDLK_ESCAPE:
-						again = false;
-						break;
+			SDL_PollEvent(&event);
+			switch(event.type){
+				case SDL_KEYDOWN:
+					switch (event.key.keysym.sym){
+						case SDLK_LEFT:  
+							player->accelerateX(-.001);
+							cout << "left" << endl;
+							break;
+						case SDLK_RIGHT: 
+							player->accelerateX(.001);
+							cout << "right" << endl;
+							break;
+						case SDLK_UP:    
+							player->accelerateY(-.001); 
+							cout << "up" << endl;
+							break;
+						case SDLK_DOWN:  
+							player->accelerateY(.001);
+							cout << "down" << endl;
+							break;
+					}
+				case SDL_KEYUP:
+					switch (event.key.keysym.sym){
+						case SDLK_LEFT:  
+							player->accelerateX(-.001);
+							cout << "left" << endl;
+							break;
+						case SDLK_RIGHT: 
+							player->accelerateX(.001);
+							cout << "right" << endl;
+							break;
+						case SDLK_UP:    
+							player->accelerateY(-.001); 
+							cout << "up" << endl;
+							break;
+						case SDLK_DOWN:  
+							player->accelerateY(.001);
+							cout << "down" << endl;
+							break;
+						case SDLK_ESCAPE:
+							again = false;
+							break;
+					}
 				}
 			SDL_Delay(16);
 			}
-		}
 		cout << "exit game loop" << endl;
 	}
 };
