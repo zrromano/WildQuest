@@ -2,7 +2,10 @@
 #include "SDL.h"
 #include <stdio.h>
 #include <iostream>
-#include <string.h>
+#include <iomanip>
+#include <string>
+#include <vector>
+#include <sstream>
 
 using namespace std;
 
@@ -103,11 +106,61 @@ class Image{
 	SDL_Rect getSize(){ return src; }
 };
 
-class Sprite:public Image {
+typedef pair<Image *,int /*time*/> frameWithTime;
+class Animation{
+	vector < frameWithTime > frames;
+	int time, totalTime, frame; //in ms
+	public:
+	Animation(Game *game, string path, int count, int fps, int x, int y) {
+		stringstream filename;
+		//path images/frame i .bmp
+		for(int i=0; i < count; i++) {
+			filename.str("");
+			filename << path << setw(4) << setfill('0') << i << ".bmp";
+			cout << filename.str() << endl;
+			Image *img = new Image(game, filename.str(), x, y);
+			frames.push_back(frameWithTime(img,1000/fps));
+		}
+		frame = 0;
+	}
+	void update(float dt=0, int setFrame=-1){
+		if(setFrame=-1){
+			time += (int)dt;
+			time = time % totalTime;
+			int currentTime = time;
+			frame = 0;
+			for(int i=0; i < frames.size(); i++){
+				if(currentTime<frames[i].second){
+					frame = i;
+					break;
+				}
+				currentTime -= frames[i].second;
+			}
+		}
+		else{
+			frame = setFrame;
+		}
+	}
+	SDL_Rect getSize() {
+		SDL_Rect neverHappen;
+		if (frames.size() > 0) 
+			return frames[0].first->getSize();
+		return neverHappen;
+	}
+	int getFrame(){ return frame; }
+	void setFrame(int _frame){ frame = _frame;
+		cout << "frame set to " << frame;}
+	void Render(Game *game, int x=0, int y=0){
+		frames[frame].first->Render(game,x,y);
+	}
+};
+
+class Sprite:public Animation {
 	float x,y,dx,dy,ax,ay;
 	int gw,gh;
 	public:
-	Sprite(Game *g, string filename, float _x=0.0, float _y=0.0, float _dx=0.0, float _dy=0.0, float _ax=0.0, float _ay=0.0):Image(g,filename) {
+	Sprite(Game *g, string filename, int count=1, int fps=30, float _x=0.0, float _y=0.0, float _dx=0.0, float _dy=0.0, float _ax=0.0, float _ay=0.0):
+	  Animation(g, filename, count, fps, _x, _y){
 		x = _x;
 		y = _y;
 		dx = _dx;
@@ -118,18 +171,29 @@ class Sprite:public Image {
 		gw = resolution.w;
 		gh = resolution.h;
 	}
-	void update(float dt /* in ms */){
+	void random() {
+		x=(float)(rand() % gw);
+		y=(float)(rand() % gh);
+		dx=(float)((rand()% (40*100))-2000)/100.0;
+		dy=(float)((rand()% (40*100))-2000)/100.0;
+	}
+	void update(float dt /* in ms */, int setFrame=-1){
+		//Animation::update(dt, setFrame);
 		dt/=1000.0;
 		dx = dx + ax * dt;
 		dy = dy + ay * dt;
 		x = x + dx * dt;
 		y = y + dy * dt;
-		if(y>gh || y<gh) dy = 0;
-		if(x>gw || x<gw) dx = 0;
+		if(y<0 || y>gh) dy = -dy;
+		if(x<gw || x>gw) dx = -dx;
 	}
 	void render(Game *g, int setX=-1, int setY=-1){
-		if(setX != -1 && setY != -1) Image::Render(g, setX, setY);
-		else Image::Render(g,(int)x,(int)y);
+		if(setX != -1 && setY != -1) {
+			Animation::Render(g, setX, setY);
+		}
+		else {
+			Animation::Render(g,(int)x,(int)y);
+		}
 	}
 	
 	void accelerateX(float ddx) { dx += ddx; }
@@ -144,10 +208,16 @@ class MyGame:public Game {
 	
     void init(){
 		background = new Image(this, "../res/back.bmp");
-		player = new Sprite(this, "../res/characterSprite.bmp",688.0,384.0);
+		player = new Sprite(this, "../res/playerSprite");
+		player->random();
 	}
 	//Game loop, basic gameplay functionality goes here
 	void loop(){
+		int facing = 0;
+		//0 = right
+		//1 = left
+		//2 = up
+		//3 = down
 		bool again = true;
 		SDL_Event event;
 		cout << "enter game loop" << endl;
@@ -155,9 +225,9 @@ class MyGame:public Game {
 		unsigned start = SDL_GetTicks();
 		while(again){
 			unsigned end = SDL_GetTicks();
-			float dt = start - end;
+			float dt = (end - start);
 			start = end;
-			SDL_Renderer *renderer = this->getRenderer();
+			SDL_Renderer *renderer = getRenderer();
 			player->update(dt);
 			background->Render(this);
 			player->Render(this);
@@ -165,43 +235,19 @@ class MyGame:public Game {
 			
 			SDL_PollEvent(&event);
 			switch(event.type){
-				case SDL_KEYDOWN:
+				/*case SDL_KEYDOWN:
 					switch (event.key.keysym.sym){
 						case SDLK_LEFT:  
-							player->accelerateX(-.001);
+							facing = 1;
 							cout << "left" << endl;
 							break;
 						case SDLK_RIGHT: 
-							player->accelerateX(.001);
+							facing = 0;
 							cout << "right" << endl;
 							break;
-						case SDLK_UP:    
-							player->accelerateY(-.001); 
-							cout << "up" << endl;
-							break;
-						case SDLK_DOWN:  
-							player->accelerateY(.001);
-							cout << "down" << endl;
-							break;
-					}
+					}*/
 				case SDL_KEYUP:
 					switch (event.key.keysym.sym){
-						case SDLK_LEFT:  
-							player->accelerateX(-.001);
-							cout << "left" << endl;
-							break;
-						case SDLK_RIGHT: 
-							player->accelerateX(.001);
-							cout << "right" << endl;
-							break;
-						case SDLK_UP:    
-							player->accelerateY(-.001); 
-							cout << "up" << endl;
-							break;
-						case SDLK_DOWN:  
-							player->accelerateY(.001);
-							cout << "down" << endl;
-							break;
 						case SDLK_ESCAPE:
 							again = false;
 							break;
@@ -219,7 +265,5 @@ int main(int argc, char* argv[]) {
 	g = new MyGame();
 	g->run();
 	delete g;
-	cout << "press enter to end program..." << endl;
-	cin.get();
     return 0;
 }
