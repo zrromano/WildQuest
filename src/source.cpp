@@ -70,6 +70,7 @@ class Image{
 	SDL_Rect src;
 	public:
 	Image(Game *game, string filename, int _x=0, int _y=0){
+		cout << filename << endl;
 		SDL_Surface *surface;
 		surface=SDL_LoadBMP(filename.c_str());
 		if (surface == NULL) {
@@ -101,7 +102,7 @@ class Image{
 			dest.y = y;
 			SDL_Renderer *renderer = game->getRenderer();
 			SDL_RenderCopy(renderer, texture, &src, &dest);
-			cout << "image rendered at " << x << " " << y << endl;
+			//cout << "image rendered at " << x << " " << y << endl;
 	}
 	
 	SDL_Rect getSize(){ return src; }
@@ -118,14 +119,13 @@ class Animation{
 		for(int i=0; i < count; i++) {
 			filename.str("");
 			filename << path << setw(4) << setfill('0') << i << ".bmp";
-			cout << filename.str() << endl;
 			Image *img = new Image(game, filename.str(), x, y);
 			frames.push_back(frameWithTime(img,1000/fps));
 		}
 		frame = 0;
 	}
 	void update(float dt=0, int setFrame=-1){
-		if(setFrame=-1){
+		if(setFrame == -1){
 			time += (int)dt;
 			time = time % totalTime;
 			int currentTime = time;
@@ -136,7 +136,7 @@ class Animation{
 					break;
 				}
 				currentTime -= frames[i].second;
-			}
+			} 
 		}
 		else{
 			frame = setFrame;
@@ -153,7 +153,7 @@ class Animation{
 		cout << "frame set to " << frame;}
 	void Render(Game *game, int x=0, int y=0){
 		frames[frame].first->Render(game,x,y);
-		cout << "animation rendered at " << x << " " << y << endl;
+		//cout << "animation rendered at " << x << " " << y << endl;
 	}
 };
 
@@ -192,14 +192,14 @@ class Sprite:public Animation {
 	}
 	void Render(Game *g, int setX=-1, int setY=-1){
 		if(setX != -1 && setY != -1) {
-			cout << "pre-render" << endl;
+			//cout << "pre-render" << endl;
 			Animation::Render(g, setX, setY);
-			cout << "Sprite rendered at " << setX << " " << setY << endl;
+			//cout << "Sprite rendered at " << setX << " " << setY << endl;
 		}
 		else {
-			cout << "pre-render" << endl;
+			//cout << "pre-render" << endl;
 			Animation::Render(g,(int)x,(int)y);
-			cout << "Sprite rendered at " << x << " " << y << endl;
+			//cout << "Sprite rendered at " << x << " " << y << endl;
 		}
 	}
 	
@@ -219,7 +219,7 @@ class MyGame:public Game {
 	
     void init(){
 		background = new Image(this, "../res/back.bmp");
-		player = new Sprite(this, "../res/playerSprite");
+		player = new Sprite(this, "../res/playerSprite", 2, 1);
 		//player->random();
 	}
 	//Game loop, basic gameplay functionality goes here
@@ -239,7 +239,7 @@ class MyGame:public Game {
 			float dt = (end - start);
 			start = end;
 			SDL_Renderer *renderer = getRenderer();
-			player->update(dt);
+			player->update(dt, facing);
 			background->Render(this);
 			player->Render(this);
 			SDL_RenderPresent(renderer);	
