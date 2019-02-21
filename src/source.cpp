@@ -101,6 +101,7 @@ class Image{
 			dest.y = y;
 			SDL_Renderer *renderer = game->getRenderer();
 			SDL_RenderCopy(renderer, texture, &src, &dest);
+			cout << "image rendered at " << x << " " << y << endl;
 	}
 	
 	SDL_Rect getSize(){ return src; }
@@ -152,6 +153,7 @@ class Animation{
 		cout << "frame set to " << frame;}
 	void Render(Game *game, int x=0, int y=0){
 		frames[frame].first->Render(game,x,y);
+		cout << "animation rendered at " << x << " " << y << endl;
 	}
 };
 
@@ -178,26 +180,35 @@ class Sprite:public Animation {
 		dy=(float)((rand()% (40*100))-2000)/100.0;
 	}
 	void update(float dt /* in ms */, int setFrame=-1){
-		//Animation::update(dt, setFrame);
+		Animation::update(dt, setFrame);
 		dt/=1000.0;
 		dx = dx + ax * dt;
 		dy = dy + ay * dt;
 		x = x + dx * dt;
 		y = y + dy * dt;
-		if(y<0 || y>gh) dy = -dy;
-		if(x<gw || x>gw) dx = -dx;
+		SDL_Rect src = getSize();
+		if(y<0 || y>gh-src.h) dy = -dy;
+		if(x<0 || x>gw-src.w) dx = -dx;
 	}
-	void render(Game *g, int setX=-1, int setY=-1){
+	void Render(Game *g, int setX=-1, int setY=-1){
 		if(setX != -1 && setY != -1) {
+			cout << "pre-render" << endl;
 			Animation::Render(g, setX, setY);
+			cout << "Sprite rendered at " << setX << " " << setY << endl;
 		}
 		else {
+			cout << "pre-render" << endl;
 			Animation::Render(g,(int)x,(int)y);
+			cout << "Sprite rendered at " << x << " " << y << endl;
 		}
 	}
 	
 	void accelerateX(float ddx) { dx += ddx; }
 	void accelerateY(float ddy) { dy += ddy; }
+	void setDx(float _dx){ dx = _dx; }
+	void setDy(float _dy){ dy = _dy; }
+	float getDx(){ return dx; }
+	float getDy(){ return dy; }
 };
 
 class MyGame:public Game {
@@ -208,7 +219,7 @@ class MyGame:public Game {
 	
     void init(){
 		background = new Image(this, "../res/back.bmp");
-		player = new Sprite(this, "../res/playerSprite", 1, 1, 0, 0, 128, 96, 5, 5);
+		player = new Sprite(this, "../res/playerSprite");
 		//player->random();
 	}
 	//Game loop, basic gameplay functionality goes here
@@ -235,17 +246,32 @@ class MyGame:public Game {
 			
 			SDL_PollEvent(&event);
 			switch(event.type){
-				/*case SDL_KEYDOWN:
+				case SDL_KEYDOWN:
 					switch (event.key.keysym.sym){
 						case SDLK_LEFT:  
 							facing = 1;
+							if(player->getDx() > -100)
+								player->accelerateX(-10);
 							cout << "left" << endl;
 							break;
 						case SDLK_RIGHT: 
 							facing = 0;
+							if(player->getDx() < 100)
+								player->accelerateX(10);
 							cout << "right" << endl;
 							break;
-					}*/
+						case SDLK_UP:
+							if(player->getDy() > -100)
+								player->accelerateY(-10);
+							cout << "up" << endl;
+							break;
+						case SDLK_DOWN:
+							if(player->getDy() < 100)
+								player->accelerateY(10);
+							cout << "down" << endl;
+							break;
+					}
+					
 				case SDL_KEYUP:
 					switch (event.key.keysym.sym){
 						case SDLK_ESCAPE:
