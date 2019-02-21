@@ -208,8 +208,8 @@ class MyGame:public Game {
 	
     void init(){
 		background = new Image(this, "../res/back.bmp");
-		player = new Sprite(this, "../res/playerSprite");
-		player->random();
+		player = new Sprite(this, "../res/playerSprite", 1, 1, 0, 0, 128, 96, 5, 5);
+		//player->random();
 	}
 	//Game loop, basic gameplay functionality goes here
 	void loop(){
@@ -260,7 +260,6 @@ class MyGame:public Game {
 };
 
 int main(int argc, char* argv[]) {
-
 	Game *g;
 	g = new MyGame();
 	g->run();
