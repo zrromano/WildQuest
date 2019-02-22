@@ -187,8 +187,22 @@ class Sprite:public Animation {
 		x = x + dx * dt;
 		y = y + dy * dt;
 		SDL_Rect src = getSize();
-		if(y<0 || y>gh-src.h) dy = -dy;
-		if(x<0 || x>gw-src.w) dx = -dx;
+		if(y<0 && dy < 0){
+			dy = 0;
+			y = 0;
+		}
+		else if(y>gh-src.h && dy > 0) {
+			dy = 0;
+			y = gh-src.h;
+		}
+		if(x<0 && dx < 0){
+			dx = 0;
+			x = 0;
+		}
+		else if(x>gw-src.w && dx > 0) {
+			dx = 0;
+			x = gw-src.w;
+		}
 	}
 	void Render(Game *g, int setX=-1, int setY=-1){
 		if(setX != -1 && setY != -1) {
@@ -248,32 +262,34 @@ class MyGame:public Game {
 			switch(event.type){
 				case SDL_KEYDOWN:
 					switch (event.key.keysym.sym){
+						//Accelerate in a direction up to a max speed
 						case SDLK_LEFT:  
 							facing = 1;
-							if(player->getDx() > -100)
+							if(player->getDx() > -250)
 								player->accelerateX(-10);
-							cout << "left" << endl;
+							//cout << "left" << endl;
 							break;
 						case SDLK_RIGHT: 
 							facing = 0;
-							if(player->getDx() < 100)
+							if(player->getDx() < 250)
 								player->accelerateX(10);
-							cout << "right" << endl;
+							//cout << "right" << endl;
 							break;
 						case SDLK_UP:
-							if(player->getDy() > -100)
+							if(player->getDy() > -250)
 								player->accelerateY(-10);
-							cout << "up" << endl;
+							//cout << "up" << endl;
 							break;
 						case SDLK_DOWN:
-							if(player->getDy() < 100)
+							if(player->getDy() < 250)
 								player->accelerateY(10);
-							cout << "down" << endl;
+							//cout << "down" << endl;
 							break;
 					}
 					
 				case SDL_KEYUP:
 					switch (event.key.keysym.sym){
+						//Break game loop
 						case SDLK_ESCAPE:
 							again = false;
 							break;
