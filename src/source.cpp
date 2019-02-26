@@ -230,7 +230,6 @@ class MyGame:public Game {
 	Sprite *player;
 	public:
 	MyGame():Game("Wild Quest"){};
-	
     void init(){
 		background = new Image(this, "../res/back.bmp");
 		player = new Sprite(this, "../res/playerSprite", 2, 1);
@@ -238,6 +237,7 @@ class MyGame:public Game {
 	}
 	//Game loop, basic gameplay functionality goes here
 	void loop(){
+		const Uint8 *keystate = SDL_GetKeyboardState(NULL);
 		int facing = 0;
 		//0 = right
 		//1 = left
@@ -267,7 +267,7 @@ class MyGame:public Game {
 							facing = 1;
 							if(player->getDx() > -250)
 								player->accelerateX(-10);
-							//cout << "left" << endl;
+							//cout << "right" << endl;
 							break;
 						case SDLK_RIGHT: 
 							facing = 0;
@@ -296,7 +296,7 @@ class MyGame:public Game {
 					}
 				}
 			SDL_Delay(16);
-			}
+		}
 		cout << "exit game loop" << endl;
 	}
 };
