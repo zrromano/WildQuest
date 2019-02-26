@@ -13,7 +13,9 @@ class Game{
 	SDL_Window *window;
 	SDL_Renderer *renderer;
 	SDL_Rect resolution;
+	bool inGameLoop;
 	public:
+	const Uint8 *keystate;
 	Game(string title, int width=1366, int height=768){
 		resolution.w = width;
 		resolution.h = height;
@@ -44,6 +46,7 @@ class Game{
 			return; 
 		}
 		cout << "renderer created" << endl;
+		keystate = SDL_GetKeyboardState(NULL);
 	}
 	~Game(){
 		SDL_DestroyWindow(window);
@@ -52,16 +55,30 @@ class Game{
 	
 	//Abstract methods defined by inheriting classes
 	virtual void init()=0;
-	virtual void loop()=0;
+	virtual void keyboardHandler(SDL_Event *event)=0;
+	virtual void update(float dt)=0;
+	virtual void Render()=0;
 	
 	SDL_Renderer *getRenderer(){ return renderer; }
 	SDL_Rect getResolution(){ return resolution; }
 	SDL_Window *getWindow() { return window; }
+	void setInGameLoop(bool _inGameLoop) { inGameLoop = _inGameLoop; }
 	void run(){
+		SDL_Event event;
 		if (renderer == NULL || window == NULL) {return;}
 		cout << "init" << endl;
 		init();
-		loop();
+		inGameLoop = true;
+		unsigned start = SDL_GetTicks();
+		while(inGameLoop){
+			unsigned end = SDL_GetTicks();
+			float dt = (end - start);
+			start = end;
+			if(SDL_PollEvent(&event))
+				keyboardHandler(&event);
+			update(dt);
+			Render();
+		}
 	}
 };
 
@@ -116,11 +133,13 @@ class Animation{
 	Animation(Game *game, string path, int count, int fps, int x, int y) {
 		stringstream filename;
 		//path images/frame i .bmp
+		totalTime = 0;
 		for(int i=0; i < count; i++) {
 			filename.str("");
 			filename << path << setw(4) << setfill('0') << i << ".bmp";
 			Image *img = new Image(game, filename.str(), x, y);
 			frames.push_back(frameWithTime(img,1000/fps));
+			totalTime += 1000;
 		}
 		frame = 0;
 	}
@@ -237,7 +256,7 @@ class MyGame:public Game {
 	}
 	//Game loop, basic gameplay functionality goes here
 	void loop(){
-		const Uint8 *keystate = SDL_GetKeyboardState(NULL);
+
 		int facing = 0;
 		//0 = right
 		//1 = left
@@ -252,11 +271,7 @@ class MyGame:public Game {
 			unsigned end = SDL_GetTicks();
 			float dt = (end - start);
 			start = end;
-			SDL_Renderer *renderer = getRenderer();
-			player->update(dt, facing);
-			background->Render(this);
-			player->Render(this);
-			SDL_RenderPresent(renderer);	
+	
 			
 			SDL_PollEvent(&event);
 			switch(event.type){
@@ -299,6 +314,32 @@ class MyGame:public Game {
 		}
 		cout << "exit game loop" << endl;
 	}
+	
+	void keyboardHandler(SDL_Event *event){
+		if(keystate[SDL_SCANCODE_ESCAPE])
+			setInGameLoop(false);
+		if(keystate[SDL_SCANCODE_A]){
+			player->setFrame(1);
+			if(player->getDx() > -250)
+				player->accelerateX(-10);
+		}
+		if(keystate[SDL_SCANCODE_D]){
+			player->setFrame(0);
+			if(player->getDx() < 250)
+				player->accelerateX(-10);
+		}
+	}
+	
+	void update(float dt){
+		player->update(dt, player->getFrame());
+	}
+	
+	void Render(){
+		SDL_Renderer *renderer = getRenderer();
+		background->Render(this);
+		player->Render(this);
+		SDL_RenderPresent(renderer);
+	}	
 };
 
 int main(int argc, char* argv[]) {
