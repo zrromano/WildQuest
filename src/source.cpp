@@ -74,10 +74,11 @@ class Game{
 			unsigned end = SDL_GetTicks();
 			float dt = (end - start);
 			start = end;
-			if(SDL_PollEvent(&event))
-				keyboardHandler(&event);
 			update(dt);
 			Render();
+			SDL_PollEvent(&event);
+			keyboardHandler(&event);
+			SDL_Delay(16);
 		}
 	}
 };
@@ -168,8 +169,7 @@ class Animation{
 		return neverHappen;
 	}
 	int getFrame(){ return frame; }
-	void setFrame(int _frame){ frame = _frame;
-		cout << "frame set to " << frame;}
+	void setFrame(int _frame){ frame = _frame; }
 	void Render(Game *game, int x=0, int y=0){
 		frames[frame].first->Render(game,x,y);
 		//cout << "animation rendered at " << x << " " << y << endl;
@@ -207,18 +207,22 @@ class Sprite:public Animation {
 		y = y + dy * dt;
 		SDL_Rect src = getSize();
 		if(y<0 && dy < 0){
+			cout << "hit top wall" << endl;
 			dy = 0;
 			y = 0;
 		}
 		else if(y>gh-src.h && dy > 0) {
+			cout << "hit bottom wall" << endl;
 			dy = 0;
 			y = gh-src.h;
 		}
 		if(x<0 && dx < 0){
+			cout << "hit left wall" << endl;
 			dx = 0;
 			x = 0;
 		}
 		else if(x>gw-src.w && dx > 0) {
+			cout << "hit right wall" << endl;
 			dx = 0;
 			x = gw-src.w;
 		}
@@ -252,10 +256,9 @@ class MyGame:public Game {
     void init(){
 		background = new Image(this, "../res/back.bmp");
 		player = new Sprite(this, "../res/playerSprite", 2, 1);
-		//player->random();
 	}
 	//Game loop, basic gameplay functionality goes here
-	void loop(){
+	/*void loop(){
 
 		int facing = 0;
 		//0 = right
@@ -313,24 +316,49 @@ class MyGame:public Game {
 			SDL_Delay(16);
 		}
 		cout << "exit game loop" << endl;
-	}
+	}*/
 	
 	void keyboardHandler(SDL_Event *event){
+		//Escape key - exit game loop
+		//note: Should be changed to open in-game menu with an exit game option
 		if(keystate[SDL_SCANCODE_ESCAPE])
 			setInGameLoop(false);
+			
+		//A key - move left
 		if(keystate[SDL_SCANCODE_A]){
 			player->setFrame(1);
 			if(player->getDx() > -250)
 				player->accelerateX(-10);
 		}
+		else if(player->getDx() < 0)	
+			player->accelerateX(5);
+		//D key - move right	
 		if(keystate[SDL_SCANCODE_D]){
 			player->setFrame(0);
-			if(player->getDx() < 250)
-				player->accelerateX(-10);
+			if(player->getDx() < 250){
+				player->accelerateX(10);
+			}
 		}
+		else if(player->getDx() > 0)	
+			player->accelerateX(-5);
+		//W key - move up
+		if(keystate[SDL_SCANCODE_W]){
+			if(player->getDy() > -250)
+				player->accelerateY(-10);
+		}
+		else if(player->getDy() < 0)	
+			player->accelerateY(5);
+		//S key - move up
+		if(keystate[SDL_SCANCODE_S]){
+			if(player->getDy() < 250)
+				player->accelerateY(10);
+		}
+		else if(player->getDy() > 0)	
+			player->accelerateY(-5);
 	}
 	
 	void update(float dt){
+		//cout << dt << endl;
 		player->update(dt, player->getFrame());
 	}
 	
