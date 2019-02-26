@@ -318,6 +318,9 @@ class MyGame:public Game {
 		cout << "exit game loop" << endl;
 	}*/
 	
+	//keystate[SDL_SCANCODE_???] is a Uint8 array keeping track of current keyboard states
+	//1 = true = pressed
+	//0 = false = released
 	void keyboardHandler(SDL_Event *event){
 		//Escape key - exit game loop
 		//note: Should be changed to open in-game menu with an exit game option
