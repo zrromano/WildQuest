@@ -23,6 +23,8 @@ class Game{
 	SDL_Renderer *renderer;
 	SDL_Rect resolution;
 	bool inGameLoop;
+	int mouseX; //For keeping track of where the mouse curson is on screen
+	int mouseY;
 	public:
 	const Uint8 *keystate;
 	Game(string title, int width=1280, int height=720){
@@ -65,6 +67,8 @@ class Game{
 	//Abstract methods defined by inheriting classes
 	virtual void init()=0;
 	virtual void keyboardHandler(SDL_Event *event)=0;
+	virtual void mouseInputHandler(SDL_Event *event, int MouseX, int MouseY)=0;
+	virtual void mouseCusorHandler(int MouseX, int MouseY)=0;
 	virtual void update(float dt)=0;
 	virtual void Render()=0;
 	
@@ -83,10 +87,14 @@ class Game{
 			unsigned end = SDL_GetTicks();
 			float dt = (end - start);
 			start = end;
+			SDL_GetMouseState(&mouseX, &mouseY); // Gets the location of the cursor
+			mouseCusorHandler(mouseX, mouseY);
 			update(dt);
 			Render();
 			SDL_PollEvent(&event);
 			keyboardHandler(&event);
+			if (event.type == SDL_MOUSEBUTTONDOWN) //Checks if mouse has been pressed down
+					mouseInputHandler(&event, mouseX, mouseY);
 			SDL_Delay(16);
 		}
 	}
@@ -95,6 +103,7 @@ class Game{
 class Image{
 	SDL_Texture *texture;
 	SDL_Rect src;
+	SDL_Rect dest;
 	public:
 	Image(Game *game, string filename, int _x=0, int _y=0){
 		cout << filename << endl;
@@ -122,7 +131,6 @@ class Image{
 	};
 	
 	void Render(Game *game, int x=0, int y=0){
-			SDL_Rect dest;
 			dest.w = src.w;
 			dest.h = src.h;
 			dest.x = x;
@@ -132,7 +140,15 @@ class Image{
 			//cout << "image rendered at " << x << " " << y << endl;
 	}
 	
+	void setImageTint(int r, int g, int b){
+		SDL_SetTextureColorMod(texture, r, g, b);
+	}
+	
 	SDL_Rect getSize(){ return src; }
+	int getWidth(){return src.w; }
+	int getHeight(){return src.h; }
+	int getXPos(){return dest.x; }
+	int getYPos(){return dest.y; }
 };
 
 typedef pair<Image *,int /*time*/> frameWithTime;
@@ -272,7 +288,7 @@ class SceneState {
 };
 
 class MyGame:public Game {
-	Image *background, *TitleScreenBackground;
+	Image *background, *TitleScreenBackground, *playSign;
 	Sprite *player;
 	SceneState *scene;
 	public:
@@ -280,6 +296,7 @@ class MyGame:public Game {
     void init(){
 		scene = new SceneState(TitleScreen); //The Scene the game will start on
 		TitleScreenBackground = new Image(this, "../res/titleScreenBack.bmp");
+		playSign = new Image(this, "../res/playSign.bmp");
 		background = new Image(this, "../res/back.bmp");
 		player = new Sprite(this, "../res/playerSprite", 2, 1);
 	}
@@ -386,13 +403,51 @@ class MyGame:public Game {
 			player->accelerateY(-5);
 	}
 	
+	void mouseInputHandler(SDL_Event *event, int mX, int mY){
+		cout << "Mouse Down Event Triggered With Cords: " << mX << " " << mY << endl;
+		switch (scene->getCurrentScene()){
+			case TitleScreen:
+				menuHandler(mX, mY, true); //Passes cords to the menu handler with the flag that the user clicked
+			break;
+		}
+	}
+	void mouseCusorHandler(int mX, int mY){
+		switch (scene->getCurrentScene()){
+			case TitleScreen:
+				menuHandler(mX, mY, false); //Passes cords to the menu handler with the flag that the user did NOT click 
+			break;
+		}
+	}
+	
+	void menuHandler(int mouseX, int mouseY, bool userPressed){
+		switch (scene->getCurrentScene()){
+			case TitleScreen:
+				// Very Ugly. Checking if we are in the bounds of the Play Button
+				if(mouseX >= playSign->getXPos() && mouseX <= playSign->getXPos() + playSign->getWidth() && mouseY >= playSign->getYPos() && mouseY <= playSign->getYPos() + playSign->getHeight()){
+					playSign->setImageTint(150, 150, 150); // Tints the button gray if hovering over
+					cout << "In Play Button Bounds" << endl;
+					if(userPressed){
+						cout << "Play Button Pressed!" << endl;
+						scene->setScene(Running);
+					}
+				else{
+					// Currently not working.  Even while in the play area this statement is triggered causing the colors to flash.
+					//cout << "Color Reverted" << endl;
+					//playSign->setImageTint(250, 250, 250);
+				}
+				}
+			break;
+		}
+	}
+	
 	void update(float dt){
 		switch( scene->getCurrentScene() ) {
 			case TitleScreen:
+				
 			break;
 			
 			case Running: 
-			player->update(dt, player->getFrame());
+				player->update(dt, player->getFrame());
 			break;
 		}
 	}
@@ -402,6 +457,7 @@ class MyGame:public Game {
 		switch( scene->getCurrentScene() ) {
 			case TitleScreen:
 				TitleScreenBackground->Render(this);
+				playSign->Render(this, Game::getResolution().w /2 - 150, Game::getResolution().h / 2 - 150);
 				SDL_RenderPresent(renderer);
 				break;
 			case Running:
@@ -410,8 +466,9 @@ class MyGame:public Game {
 				SDL_RenderPresent(renderer);
 				break;
 		
+		}
 	}
-	}	
+	
 };
 
 int main(int argc, char* argv[]) {
