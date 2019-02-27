@@ -9,6 +9,15 @@
 
 using namespace std;
 
+typedef enum {
+		TitleScreen, 	//Starting Title Sceen
+		Running, 		//Gameplay
+		Inventory,		//Inventory Screen
+		Pause,			//Pause Menu
+		DeathScreen,	//Death Screen
+		NPCDialog 		//Dialog with interacting with NPC
+} SceneType;
+
 class Game{
 	SDL_Window *window;
 	SDL_Renderer *renderer;
@@ -16,7 +25,7 @@ class Game{
 	bool inGameLoop;
 	public:
 	const Uint8 *keystate;
-	Game(string title, int width=1366, int height=768){
+	Game(string title, int width=1280, int height=720){
 		resolution.w = width;
 		resolution.h = height;
 		SDL_Init(SDL_INIT_VIDEO);
@@ -248,12 +257,29 @@ class Sprite:public Animation {
 	float getDy(){ return dy; }
 };
 
+class SceneState {
+	SceneType currentScene;
+	int levelID = 1; //Possible Future Implementation
+	int cutSceneID = 1; //Possible Future Implementation
+	
+	public:
+	SceneState(SceneType scene){
+		currentScene = scene;
+	};
+	void setScene(SceneType newScene){ currentScene = newScene; }
+	SceneType getCurrentScene(){ return currentScene; }
+	
+};
+
 class MyGame:public Game {
-	Image *background;
+	Image *background, *TitleScreenBackground;
 	Sprite *player;
+	SceneState *scene;
 	public:
 	MyGame():Game("Wild Quest"){};
     void init(){
+		scene = new SceneState(TitleScreen); //The Scene the game will start on
+		TitleScreenBackground = new Image(this, "../res/titleScreenBack.bmp");
 		background = new Image(this, "../res/back.bmp");
 		player = new Sprite(this, "../res/playerSprite", 2, 1);
 	}
@@ -361,15 +387,30 @@ class MyGame:public Game {
 	}
 	
 	void update(float dt){
-		//cout << dt << endl;
-		player->update(dt, player->getFrame());
+		switch( scene->getCurrentScene() ) {
+			case TitleScreen:
+			break;
+			
+			case Running: 
+			player->update(dt, player->getFrame());
+			break;
+		}
 	}
 	
 	void Render(){
 		SDL_Renderer *renderer = getRenderer();
-		background->Render(this);
-		player->Render(this);
-		SDL_RenderPresent(renderer);
+		switch( scene->getCurrentScene() ) {
+			case TitleScreen:
+				TitleScreenBackground->Render(this);
+				SDL_RenderPresent(renderer);
+				break;
+			case Running:
+				background->Render(this);
+				player->Render(this);
+				SDL_RenderPresent(renderer);
+				break;
+		
+	}
 	}	
 };
 
