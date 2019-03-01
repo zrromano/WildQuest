@@ -371,11 +371,12 @@ class MyGame:public Game {
 		//note: Should be changed to open in-game menu with an exit game option
 		if(keystate[SDL_SCANCODE_ESCAPE]){
 			unsigned currentTicks = SDL_GetTicks();
-			if(scene->getCurrentScene() == Running && currentTicks - scene->getLastUpdatedTime() > 1000){
+			//Check to see if the pause button has been pressed, but only pause if its been 250ms since last scene change
+			if(scene->getCurrentScene() == Running && currentTicks - scene->getLastUpdatedTime() > 250){
 				scene->setScene(Pause);
 				scene->setTime(currentTicks);
 			}
-			else if(scene->getCurrentScene() == Pause && currentTicks - scene->getLastUpdatedTime() > 1000) {
+			else if(scene->getCurrentScene() == Pause && currentTicks - scene->getLastUpdatedTime() > 250) {
 				scene->setScene(Running);
 				scene->setTime(currentTicks);
 			}
