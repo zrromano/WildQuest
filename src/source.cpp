@@ -277,13 +277,15 @@ class SceneState {
 	SceneType currentScene;
 	int levelID = 1; //Possible Future Implementation
 	int cutSceneID = 1; //Possible Future Implementation
-	
+	unsigned lastUpdatedTime;
 	public:
 	SceneState(SceneType scene){
 		currentScene = scene;
 	};
 	void setScene(SceneType newScene){ currentScene = newScene; }
 	SceneType getCurrentScene(){ return currentScene; }
+	void setTime(unsigned time){lastUpdatedTime = time; }
+	unsigned getLastUpdatedTime() {return lastUpdatedTime; } 
 	
 };
 
@@ -367,9 +369,18 @@ class MyGame:public Game {
 	void keyboardHandler(SDL_Event *event){
 		//Escape key - exit game loop
 		//note: Should be changed to open in-game menu with an exit game option
-		if(keystate[SDL_SCANCODE_ESCAPE])
-			setInGameLoop(false);
-			
+		if(keystate[SDL_SCANCODE_ESCAPE]){
+			unsigned currentTicks = SDL_GetTicks();
+			if(scene->getCurrentScene() == Running && currentTicks - scene->getLastUpdatedTime() > 1000){
+				scene->setScene(Pause);
+				scene->setTime(currentTicks);
+			}
+			else if(scene->getCurrentScene() == Pause && currentTicks - scene->getLastUpdatedTime() > 1000) {
+				scene->setScene(Running);
+				scene->setTime(currentTicks);
+			}
+			//setInGameLoop(false);
+		}
 		//A key - move left
 		if(keystate[SDL_SCANCODE_A]){
 			player->setFrame(1);
@@ -430,11 +441,10 @@ class MyGame:public Game {
 						cout << "Play Button Pressed!" << endl;
 						scene->setScene(Running);
 					}
-				else{
-					// Currently not working.  Even while in the play area this statement is triggered causing the colors to flash.
-					//cout << "Color Reverted" << endl;
-					//playSign->setImageTint(250, 250, 250);
 				}
+				else{
+					// Returns Image tint to normal
+					playSign->setImageTint(250, 250, 250);
 				}
 			break;
 		}
@@ -445,9 +455,11 @@ class MyGame:public Game {
 			case TitleScreen:
 				
 			break;
-			
 			case Running: 
 				player->update(dt, player->getFrame());
+			break;
+			case Pause:
+				
 			break;
 		}
 	}
@@ -459,12 +471,15 @@ class MyGame:public Game {
 				TitleScreenBackground->Render(this);
 				playSign->Render(this, Game::getResolution().w /2 - 150, Game::getResolution().h / 2 - 150);
 				SDL_RenderPresent(renderer);
-				break;
+			break;
 			case Running:
 				background->Render(this);
 				player->Render(this);
 				SDL_RenderPresent(renderer);
-				break;
+			break;
+			case Pause:
+				cout << "Paused" << endl;
+			break;
 		
 		}
 	}
