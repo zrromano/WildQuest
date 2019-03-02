@@ -179,11 +179,11 @@ class Animation{
 class Sprite:public Animation {
 	float x,y,dx,dy,ax,ay;
 	int gw,gh;
-	bool dead;
+	bool dead, wallCollision;
+	SDL_Rect size;
 	public:
 	bool within(float otherX, float otherY){
-		SDL_Rect us = getSize();
-		return x<=otherX && otherX<=x+us.w && y<=otherY && otherY<=y+us.h;
+		return x<=otherX && otherX<=x+size.w && y<=otherY && otherY<=y+size.h;
 	}
 	bool collidesWith(Sprite &other){
 		SDL_Rect them = other.getSize();
@@ -202,6 +202,7 @@ class Sprite:public Animation {
 		gw = resolution.w;
 		gh = resolution.h;
 		dead = false;
+		size = getSize();
 	}
 	void random() {
 		x=(float)(rand() % gw);
@@ -209,35 +210,43 @@ class Sprite:public Animation {
 		dx=(float)((rand()% (40*100))-2000)/100.0;
 		dy=(float)((rand()% (40*100))-2000)/100.0;
 	}
+	bool collision(){
+		bool ret = false;
+		if(wallCollision) ret = true;
+		return ret;
+	}
 	void update(float dt /* in ms */, int setFrame=-1){
+		if(wallCollision) wallCollision = false;
 		if(!dead){
 		//Animation::update(dt, setFrame);
 		dt/=1000.0;
 		x = x + dx * dt;
 		y = y + dy * dt;
-		SDL_Rect src = getSize();
 		if(y<0 && dy < 0){
+			wallCollision = true;
 			cout << "hit top wall" << endl;
 			dy = 0;
 			y = 0;
 		}
-		else if(y>gh-src.h && dy > 0) {
+		else if(y>gh-size.h && dy > 0) {
+			wallCollision = true;
 			cout << "hit bottom wall" << endl;
 			dy = 0;
-			y = gh-src.h;
+			y = gh-size.h;
 		}
 		if(x<0 && dx < 0){
+			wallCollision = true;
 			cout << "hit left wall" << endl;
 			dx = 0;
 			x = 0;
 		}
-		else if(x>gw-src.w && dx > 0) {
+		else if(x>gw-size.w && dx > 0) {
+			wallCollision = true;
 			cout << "hit right wall" << endl;
 			dx = 0;
-			x = gw-src.w;
+			x = gw-size.w;
 		}
-		}
-		else {delete this;}
+	}
 	}
 	void Render(Game *g, int setX=-1, int setY=-1){
 		if(setX != -1 && setY != -1) {
@@ -256,84 +265,47 @@ class Sprite:public Animation {
 	void accelerateY(float ddy) { dy += ddy; }
 	void setDx(float _dx){ dx = _dx; }
 	void setDy(float _dy){ dy = _dy; }
+	void kill(){ dead = true; }
 	float getDx(){ return dx; }
 	float getDy(){ return dy; }
 	float getX() { return x; }
 	float getY() { return y; }
+	float getW() { return size.w; }
+	float getH() { return size.h; }
 };
 
+class Player:public Sprite{
+	int lastShot; //game ticks since last shot
+	int shotDelay;
+	public:
+	Player(Game *g, string filename, int count=2, int fps=1, float _x=0.0, float _y=0.0, float _dx=0.0, float _dy=0.0, float spriteX=0.0, float spriteY=0.0):
+	  Sprite(g, filename, count, fps, _x, _y, _dx, _dy, spriteX, spriteY){
+		lastShot = 0;
+		shotDelay = 30;
+	}
+	void shoot(){ lastShot = 0; }
+	void noShoot(){ lastShot += 1; }
+	bool canShoot(){ return lastShot >= shotDelay; }
+};
+
+class Projectile: public Sprite{
+	int damage;
+	public:
+	Projectile(Game *g, string filename, float _x=0.0, float _y=0.0, float _dx=0.0, float _dy=0.0, int _damage=0, int count=1, int fps=1, float spriteX=0.0, float spriteY=0.0):
+	  Sprite(g, filename, count, fps, _x, _y, _dx, _dy, spriteX, spriteY){
+		damage = _damage; 
+	}	
+};
 class MyGame:public Game {
 	Image *background;
-	Sprite *player;
-	vector<Sprite *> projectiles;
+	Player *player;
+	vector<Projectile *> projectiles;
 	public:
 	MyGame():Game("Wild Quest"){};
     void init(){
 		background = new Image(this, "../res/back.bmp");
-		player = new Sprite(this, "../res/playerSprite", 2, 1);
-		Sprite *projectile = new Sprite(this,"../res/bullet", 1, 30, player->getX(), 500.0,500.0);
-		projectiles.push_back(projectile);
+		player = new Player(this, "../res/playerSprite");
 	}
-	//Game loop, basic gameplay functionality goes here
-	/*void loop(){
-
-		int facing = 0;
-		//0 = right
-		//1 = left
-		//2 = up
-		//3 = down
-		bool again = true;
-		SDL_Event event;
-		cout << "enter game loop" << endl;
-
-		unsigned start = SDL_GetTicks();
-		while(again){
-			unsigned end = SDL_GetTicks();
-			float dt = (end - start);
-			start = end;
-	
-			
-			SDL_PollEvent(&event);
-			switch(event.type){
-				case SDL_KEYDOWN:
-					switch (event.key.keysym.sym){
-						//Accelerate in a direction up to a max speed
-						case SDLK_LEFT:  
-							facing = 1;
-							if(player->getDx() > -250)
-								player->accelerateX(-10);
-							//cout << "right" << endl;
-							break;
-						case SDLK_RIGHT: 
-							facing = 0;
-							if(player->getDx() < 250)
-								player->accelerateX(10);
-							//cout << "right" << endl;
-							break;
-						case SDLK_UP:
-							if(player->getDy() > -250)
-								player->accelerateY(-10);
-							//cout << "up" << endl;
-							break;
-						case SDLK_DOWN:
-							if(player->getDy() < 250)
-								player->accelerateY(10);
-							//cout << "down" << endl;
-							break;
-					}
-					
-				case SDL_KEYUP:
-					switch (event.key.keysym.sym){
-						//Break game loop
-						case SDLK_ESCAPE:
-							again = false;
-							break;
-					}
-				}
-			SDL_Delay(16);
-		}
-		cout << "exit game loop" << endl;
-	}*/
 	
 	//keystate[SDL_SCANCODE_???] is a Uint8 array keeping track of current keyboard states
 	//1 = true = pressed
@@ -346,7 +318,6 @@ class MyGame:public Game {
 			
 		//A key - move left
 		if(keystate[SDL_SCANCODE_A]){
-			player->setFrame(1);
 			if(player->getDx() > -250)
 				player->accelerateX(-10);
 		}
@@ -354,7 +325,6 @@ class MyGame:public Game {
 			player->accelerateX(5);
 		//D key - move right	
 		if(keystate[SDL_SCANCODE_D]){
-			player->setFrame(0);
 			if(player->getDx() < 250){
 				player->accelerateX(10);
 			}
@@ -376,31 +346,55 @@ class MyGame:public Game {
 		else if(player->getDy() > 0)	
 			player->accelerateY(-5);
 			
-		if(keystate[SDL_SCANCODE_RIGHT]){
+		if(keystate[SDL_SCANCODE_RIGHT] && player->canShoot()){
 			player->setFrame(0);
-			Sprite *projectile = new Sprite(this,"../res/bullet", 1, 30, player->getX(), player->getY(), (player->getDx()/2 + 400), player->getDy());
+			Projectile *projectile = new Projectile(this,"../res/bullet", 
+											(player->getX() + player->getW() - 28), 
+											(player->getY() + (player->getH()/2)), 
+											((player->getDx()/2) + 400), 
+											(player->getDy() * 0.8),
+											0);
 			projectiles.push_back(projectile);
+			player->shoot();
 		}
-		if(keystate[SDL_SCANCODE_LEFT]){
+		else if(keystate[SDL_SCANCODE_LEFT] && player->canShoot()){
 			player->setFrame(1);
-			Sprite *projectile = new Sprite(this,"../res/bullet", 1, 30, player->getX(), player->getY(), (player->getDx()/2 - 400), player->getDy());
+			Projectile *projectile = new Projectile(this,"../res/bullet",  
+											(player->getX() + 20), 
+											(player->getY() + (player->getH()/2)), 
+											(player->getDx()/2 - 400), 
+											(player->getDy() * 0.8),
+											0);
 			projectiles.push_back(projectile);
+			player->shoot();
 		}
-		if(keystate[SDL_SCANCODE_DOWN]){
-			Sprite *projectile = new Sprite(this,"../res/bullet", 1, 30, player->getX(), player->getY(), player->getDx(), (player->getDy()/2 + 400));
+		else if(keystate[SDL_SCANCODE_DOWN] && player->canShoot()){
+			Projectile *projectile = new Projectile(this,"../res/bullet", 
+											(player->getX() + (player->getW()/2)), 
+											(player->getY() + player->getH()), 
+											(player->getDx() * 0.8), 
+											(player->getDy()/2 + 400),
+											0);
 			projectiles.push_back(projectile);
+			player->shoot();
 		}
-		if(keystate[SDL_SCANCODE_UP]){
-			Sprite *projectile = new Sprite(this,"../res/bullet", 1, 30, player->getX(), player->getY(), player->getDx(), (player->getDy()/2 - 400));
+		else if(keystate[SDL_SCANCODE_UP] && player->canShoot()){
+			Projectile *projectile = new Projectile(this,"../res/bullet", 
+											(player->getX() + (player->getW()/2)), 
+											player->getY(), 
+											(player->getDx() * 0.8), 
+											(player->getDy()/2 - 400),
+											0);
 			projectiles.push_back(projectile);
-		}
+			player->shoot();
+		} else { player->noShoot(); }
 	}
 	
 	void update(float dt){
 		//cout << dt << endl;
 		player->update(dt, player->getFrame());
 		for(int i = 0; i < projectiles.size(); i++)
-			projectiles[i]->update(dt,projectiles[i]->getFrame());
+			projectiles[i]->update(dt);
 	}
 	
 	void Render(){
