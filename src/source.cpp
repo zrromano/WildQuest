@@ -144,6 +144,10 @@ class Image{
 		SDL_SetTextureColorMod(texture, r, g, b);
 	}
 	
+	void setImageOpacity(int opacity){
+		SDL_SetTextureAlphaMod(texture, opacity);
+	}
+	
 	SDL_Rect getSize(){ return src; }
 	int getWidth(){return src.w; }
 	int getHeight(){return src.h; }
@@ -290,7 +294,7 @@ class SceneState {
 };
 
 class MyGame:public Game {
-	Image *background, *TitleScreenBackground, *playSign;
+	Image *background, *TitleScreenBackground, *playSign, *pauseScreenBackground, *pauseLogo;
 	Sprite *player;
 	SceneState *scene;
 	public:
@@ -301,6 +305,9 @@ class MyGame:public Game {
 		playSign = new Image(this, "../res/playSign.bmp");
 		background = new Image(this, "../res/back.bmp");
 		player = new Sprite(this, "../res/playerSprite", 2, 1);
+		//pauseScreenBackground = new Image(this, "../res/pauseBackground.bmp");
+		pauseLogo = new Image(this, "../res/pauseLogo.bmp"); 
+		
 	}
 	//Game loop, basic gameplay functionality goes here
 	/*void loop(){
@@ -480,6 +487,8 @@ class MyGame:public Game {
 			break;
 			case Pause:
 				cout << "Paused" << endl;
+				pauseLogo->Render(this, Game::getResolution().w / 2 - 100, Game::getResolution().h / 2 - 300);
+				SDL_RenderPresent(renderer);
 			break;
 		
 		}
