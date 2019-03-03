@@ -143,11 +143,7 @@ class Image{
 	void setImageTint(int r, int g, int b){
 		SDL_SetTextureColorMod(texture, r, g, b);
 	}
-	
-	void setImageOpacity(int opacity){
-		SDL_SetTextureAlphaMod(texture, opacity);
-	}
-	
+		
 	SDL_Rect getSize(){ return src; }
 	int getWidth(){return src.w; }
 	int getHeight(){return src.h; }
@@ -294,7 +290,7 @@ class SceneState {
 };
 
 class MyGame:public Game {
-	Image *background, *TitleScreenBackground, *playSign, *pauseScreenBackground, *pauseLogo;
+	Image *background, *TitleScreenBackground, *playSign, *pauseScreenBackground, *pauseLogo, *resumeImage, *mainMenuSign, *quitSign;
 	Sprite *player;
 	SceneState *scene;
 	public:
@@ -307,6 +303,9 @@ class MyGame:public Game {
 		player = new Sprite(this, "../res/playerSprite", 2, 1);
 		//pauseScreenBackground = new Image(this, "../res/pauseBackground.bmp");
 		pauseLogo = new Image(this, "../res/pauseLogo.bmp"); 
+		resumeImage = new Image(this, "../res/resumeSign.bmp");
+		mainMenuSign = new Image(this, "../res/mainMenuSign.bmp");
+		quitSign = new Image(this, "../res/quitSign.bmp");
 		
 	}
 	//Game loop, basic gameplay functionality goes here
@@ -428,6 +427,9 @@ class MyGame:public Game {
 			case TitleScreen:
 				menuHandler(mX, mY, true); //Passes cords to the menu handler with the flag that the user clicked
 			break;
+			case Pause:
+				menuHandler(mX, mY, true);
+			break;
 		}
 	}
 	void mouseCusorHandler(int mX, int mY){
@@ -435,24 +437,54 @@ class MyGame:public Game {
 			case TitleScreen:
 				menuHandler(mX, mY, false); //Passes cords to the menu handler with the flag that the user did NOT click 
 			break;
+			case Pause:
+				menuHandler(mX, mY, false);
+			break;
 		}
 	}
 	
 	void menuHandler(int mouseX, int mouseY, bool userPressed){
+		unsigned currentTicks = SDL_GetTicks();
 		switch (scene->getCurrentScene()){
 			case TitleScreen:
 				// Very Ugly. Checking if we are in the bounds of the Play Button
 				if(mouseX >= playSign->getXPos() && mouseX <= playSign->getXPos() + playSign->getWidth() && mouseY >= playSign->getYPos() && mouseY <= playSign->getYPos() + playSign->getHeight()){
 					playSign->setImageTint(150, 150, 150); // Tints the button gray if hovering over
-					cout << "In Play Button Bounds" << endl;
-					if(userPressed){
-						cout << "Play Button Pressed!" << endl;
+					//cout << "In Play Button Bounds" << endl;
+					if(userPressed)
 						scene->setScene(Running);
-					}
+				}
+				else if(mouseX >= quitSign->getXPos() && mouseX <= quitSign->getXPos() + quitSign->getWidth() && mouseY >= quitSign->getYPos() && mouseY <= quitSign->getYPos() + quitSign->getHeight()){
+					quitSign->setImageTint(150, 150, 150);
+					if(userPressed && currentTicks - scene->getLastUpdatedTime() > 250) // To Prevent Going to main Menu and quitting right away
+						setInGameLoop(false);
 				}
 				else{
 					// Returns Image tint to normal
 					playSign->setImageTint(250, 250, 250);
+					quitSign->setImageTint(250, 250, 250);
+				}
+			break;
+			
+			case Pause:
+				if(mouseX >= resumeImage->getXPos() && mouseX <= resumeImage->getXPos() + resumeImage->getWidth() && mouseY >= resumeImage->getYPos() && mouseY <= resumeImage->getYPos() + resumeImage->getHeight()){
+					resumeImage->setImageTint(150, 150, 150);
+					//cout << "In Resume Bounds." << endl;
+					if(userPressed)
+						scene->setScene(Running);
+				}
+				else if(mouseX >= mainMenuSign->getXPos() && mouseX <= mainMenuSign->getXPos() + mainMenuSign->getWidth() && mouseY >= mainMenuSign->getYPos() && mouseY <= mainMenuSign->getYPos() + mainMenuSign->getHeight()){
+					mainMenuSign->setImageTint(150, 150, 150);
+					if(userPressed){
+						scene->setTime(currentTicks); // To Prevent Going to main Menu and quitting right away
+						scene->setScene(TitleScreen);
+					}
+				}
+				else{
+					// Returns Image tint to normal
+					resumeImage->setImageTint(250, 250, 250);
+					mainMenuSign->setImageTint(250, 250, 250);
+					
 				}
 			break;
 		}
@@ -478,6 +510,7 @@ class MyGame:public Game {
 			case TitleScreen:
 				TitleScreenBackground->Render(this);
 				playSign->Render(this, Game::getResolution().w /2 - 150, Game::getResolution().h / 2 - 150);
+				quitSign->Render(this, Game::getResolution().w /2 - 150, Game::getResolution().h / 2 + 200);
 				SDL_RenderPresent(renderer);
 			break;
 			case Running:
@@ -486,8 +519,10 @@ class MyGame:public Game {
 				SDL_RenderPresent(renderer);
 			break;
 			case Pause:
-				cout << "Paused" << endl;
+				// cout << "Paused" << endl;
 				pauseLogo->Render(this, Game::getResolution().w / 2 - 100, Game::getResolution().h / 2 - 300);
+				resumeImage->Render(this, Game::getResolution().w / 2 - 150, Game::getResolution().h / 2 - 100);
+				mainMenuSign->Render(this, Game::getResolution().w / 2 - 150, Game::getResolution().h / 2 + 200);
 				SDL_RenderPresent(renderer);
 			break;
 		
