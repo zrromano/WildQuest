@@ -340,7 +340,7 @@ class Projectile: public Sprite{
 
 class MyGame:public Game {
 	Image *background, *TitleScreenBackground, *playSign, *pauseScreenBackground, *pauseLogo, *resumeImage, *mainMenuSign, *quitSign;
-	Sprite *player;
+	Player *player;
 	SceneState *scene;
 	vector<Projectile *> projectiles;
 	public:
@@ -478,13 +478,15 @@ class MyGame:public Game {
 		switch (scene->getCurrentScene()){
 			case TitleScreen:
 				// Very Ugly. Checking if we are in the bounds of the Play Button
-				if(mouseX >= playSign->getXPos() && mouseX <= playSign->getXPos() + playSign->getWidth() && mouseY >= playSign->getYPos() && mouseY <= playSign->getYPos() + playSign->getHeight()){
+				if(mouseX >= playSign->getXPos() && mouseX <= playSign->getXPos() + playSign->getWidth() 
+					&& mouseY >= playSign->getYPos() && mouseY <= playSign->getYPos() + playSign->getHeight()){
 					playSign->setImageTint(150, 150, 150); // Tints the button gray if hovering over
 					//cout << "In Play Button Bounds" << endl;
 					if(userPressed)
 						scene->setScene(Running);
 				}
-				else if(mouseX >= quitSign->getXPos() && mouseX <= quitSign->getXPos() + quitSign->getWidth() && mouseY >= quitSign->getYPos() && mouseY <= quitSign->getYPos() + quitSign->getHeight()){
+				else if(mouseX >= quitSign->getXPos() && mouseX <= quitSign->getXPos() + quitSign->getWidth() 
+					&& mouseY >= quitSign->getYPos() && mouseY <= quitSign->getYPos() + quitSign->getHeight()){
 					quitSign->setImageTint(150, 150, 150);
 					if(userPressed && currentTicks - scene->getLastUpdatedTime() > 250) // To Prevent Going to main Menu and quitting right away
 						setInGameLoop(false);
@@ -497,13 +499,15 @@ class MyGame:public Game {
 			break;
 			
 			case Pause:
-				if(mouseX >= resumeImage->getXPos() && mouseX <= resumeImage->getXPos() + resumeImage->getWidth() && mouseY >= resumeImage->getYPos() && mouseY <= resumeImage->getYPos() + resumeImage->getHeight()){
+				if(mouseX >= resumeImage->getXPos() && mouseX <= resumeImage->getXPos() + resumeImage->getWidth() 
+					&& mouseY >= resumeImage->getYPos() && mouseY <= resumeImage->getYPos() + resumeImage->getHeight()){
 					resumeImage->setImageTint(150, 150, 150);
 					//cout << "In Resume Bounds." << endl;
 					if(userPressed)
 						scene->setScene(Running);
 				}
-				else if(mouseX >= mainMenuSign->getXPos() && mouseX <= mainMenuSign->getXPos() + mainMenuSign->getWidth() && mouseY >= mainMenuSign->getYPos() && mouseY <= mainMenuSign->getYPos() + mainMenuSign->getHeight()){
+				else if(mouseX >= mainMenuSign->getXPos() && mouseX <= mainMenuSign->getXPos() + mainMenuSign->getWidth() 
+					&& mouseY >= mainMenuSign->getYPos() && mouseY <= mainMenuSign->getYPos() + mainMenuSign->getHeight()){
 					mainMenuSign->setImageTint(150, 150, 150);
 					if(userPressed){
 						scene->setTime(currentTicks); // To Prevent Going to main Menu and quitting right away
