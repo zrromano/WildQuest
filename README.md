@@ -1,21 +1,35 @@
-# VideoGameDesign
-Add a path in your build command so the .exe gets saved to the main directory when compiling.
+# VideoGameDesign - Wild Quest
+## 3/4/2019 Demo Freeze
 
-My build command as an example:
-g++ 
--I C:\Users\crazy\Code\SDL\SDL2-2.0.9\i686-w64-mingw32\include\SDL2 
--L C:\Users\crazy\Code\SDL\SDL2-2.0.9\i686-w64-mingw32\lib 
--g 
--o 
-C:\Users\crazy\Code\GitHub\VideoGameDesign\\%e 
-%f 
--lmingw32 
--lSDL2main 
--lSDL2.dll
+## Current Features
+* Main Title Screen Menu w/ Play and Quit
+* Placeholder Background and Button Artwork
+* Character Movement via wasd 
+* Projectile spawning and physics
+* Pause Menu w/ Resume and Return to Main Menu
+* Bounds checking of mouse cursor to handle button clicks
 
-This is the important bit:
-C:\Users\crazy\Code\GitHub\VideoGameDesign\\%e
+## Contribution Breakdouwn
+### Core Mechanics
+#### Zachary Romano
+* Character Spawning
+* Character Control
+* Keyboard Input Handleing 
+* Projectile Spawning and Physics
 
-Just take your main directory path and add \\%e to the end.
+#### Dustin Reynolds
+* Game Scene Control 
+* Mouse Input and Tracking
+* Title Screen Functionality
+* Pause Menu Functionality 
 
-Make sure to do the same to your execute command or it won't be able to find the .exe
+### Art Work
+#### Zachary Romano
+* Player Sprite
+* Projectile Sprites
+* Placeholder Game Background
+
+#### Dustin Reynolds
+* Placeholder Title Screen Background
+* Placeholder Title Screen Button Images
+* Placeholder Pause Menu Button Images and Logo
