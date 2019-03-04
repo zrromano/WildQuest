@@ -9,12 +9,12 @@
 * Pause Menu w/ Resume and Return to Main Menu
 * Bounds checking of mouse cursor to handle button clicks
 
-## Contribution Breakdouwn
+## Contribution Breakdown
 ### Core Mechanics
 #### Zachary Romano
 * Character Spawning
 * Character Control
-* Keyboard Input Handleing 
+* Keyboard Input Handling  
 * Projectile Spawning and Physics
 
 #### Dustin Reynolds
