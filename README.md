@@ -33,3 +33,6 @@
 * Placeholder Title Screen Background
 * Placeholder Title Screen Button Images
 * Placeholder Pause Menu Button Images and Logo
+
+## Presentation Feedback
+* Scene Rendering can be adjusted to be more Polymorphic
