@@ -6,6 +6,7 @@
 #include <string>
 #include <vector>
 #include <sstream>
+#include <fstream>
 using namespace std;
 
 typedef enum {
@@ -16,6 +17,14 @@ typedef enum {
 		DeathScreen,	//Death Screen
 		NPCDialog 		//Dialog with interacting with NPC
 } SceneType;
+
+const int level_width = 6400;
+const int level_height = 6400;
+
+const int TILE_BLACK = 0;
+const int TILE_SAND = 1;
+const int TILE_ROCK = 2;
+
 
 class Game{
 	SDL_Window *window;
@@ -301,16 +310,34 @@ class Sprite:public Animation {
 class Player:public Sprite{
 	int lastShot; //game ticks since last shot
 	int shotDelay;
+	int playerHeight;
+	int playerWidth;
 	public:
 	Player(Game *g, string filename, int count=2, int fps=1, float _x=0.0, float _y=0.0, float _dx=0.0, float _dy=0.0, float spriteX=0.0, float spriteY=0.0):
 	  Sprite(g, filename, count, fps, _x, _y, _dx, _dy, spriteX, spriteY){
 		lastShot = 0;
 		shotDelay = 30;
+		playerHeight = this->getH();
+		playerWidth = this->getW();
 	}
 	void shoot(){ lastShot = 0; }
 	void noShoot(){ lastShot += 1; }
 	bool canShoot(){ return lastShot >= shotDelay; }
+	void setCamera( SDL_Rect& camera );
+	void render( SDL_Rect& camera );
 };
+
+class Tile{
+	public:
+		Tile(int x, int y, int TileType);
+		void render(SDL_Rect& camera);
+		int getTileType();
+		SDL_Rect getCollisionBox();
+	private:
+		SDL_Rect collisionBox;
+		int TileType;
+};
+
 
 class SceneState {
 	SceneType currentScene;
@@ -356,6 +383,7 @@ class MyGame:public Game {
 		mainMenuSign = new Image(this, "../res/mainMenuSign.bmp");
 		quitSign = new Image(this, "../res/quitSign.bmp");
 	}
+	
 	
 	//keystate[SDL_SCANCODE_???] is a Uint8 array keeping track of current keyboard states
 	//1 = true = pressed
