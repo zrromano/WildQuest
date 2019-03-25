@@ -302,7 +302,7 @@ class Player:public Sprite{
 	int lastShot; //game ticks since last shot
 	int shotDelay;
 	public:
-	Player(Game *g, string filename, int count=2, int fps=1, float _x=0.0, float _y=0.0, float _dx=0.0, float _dy=0.0, float spriteX=0.0, float spriteY=0.0):
+	Player(Game *g, string filename, int count=4, int fps=1, float _x=0.0, float _y=0.0, float _dx=0.0, float _dy=0.0, float spriteX=0.0, float spriteY=0.0):
 	  Sprite(g, filename, count, fps, _x, _y, _dx, _dy, spriteX, spriteY){
 		lastShot = 0;
 		shotDelay = 30;
@@ -429,6 +429,7 @@ class MyGame:public Game {
 			player->shoot();
 		}
 		else if(keystate[SDL_SCANCODE_DOWN] && player->canShoot()){
+			player->setFrame(2);
 			Projectile *projectile = new Projectile(this,"../res/bullet", 
 											(player->getX() + (player->getW()/2)), 
 											(player->getY() + player->getH()), 
@@ -439,6 +440,7 @@ class MyGame:public Game {
 			player->shoot();
 		}
 		else if(keystate[SDL_SCANCODE_UP] && player->canShoot()){
+			player->setFrame(3);
 			Projectile *projectile = new Projectile(this,"../res/bullet", 
 											(player->getX() + (player->getW()/2)), 
 											player->getY(), 
