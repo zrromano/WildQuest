@@ -6,6 +6,9 @@
 #include <string>
 #include <vector>
 #include <sstream>
+#include <map>
+#include "MediaManager.hpp"
+
 using namespace std;
 
 typedef enum {
@@ -16,6 +19,8 @@ typedef enum {
 		DeathScreen,	//Death Screen
 		NPCDialog 		//Dialog with interacting with NPC
 } SceneType;
+
+int MediaManager::i = 0;
 
 class Game{
 	SDL_Window *window;
@@ -106,7 +111,12 @@ class Image{
 	public:
 	Image(Game *game, string filename, int _x=0, int _y=0){
 		cout << filename << endl;
-		SDL_Surface *surface;
+		
+		texture = mm.get(game, filename);
+		SDL_QueryTexture(texture,NULL,NULL,&src.w,&src.h);
+		src.x=_x;
+		src.y=_y;
+		/*SDL_Surface *surface;
 		surface=SDL_LoadBMP(filename.c_str());
 		if (surface == NULL) {
 			printf("LoadBMP failed: %s\n", SDL_GetError());
@@ -123,10 +133,7 @@ class Image{
 		if (texture == NULL) {
 			fprintf(stderr, "CreateTextureFromSurface failed: %s\n", SDL_GetError());
 			return;
-		}
-		cout << "texture created" << endl;
-		
-		SDL_FreeSurface(surface);
+		}*/
 	};
 	
 	void Render(Game *game, int x=0, int y=0){
@@ -142,7 +149,6 @@ class Image{
 	void setImageTint(int r, int g, int b){
 		SDL_SetTextureColorMod(texture, r, g, b);
 	}
-		
 	SDL_Rect getSize(){ return src; }
 	int getWidth(){return src.w; }
 	int getHeight(){return src.h; }
