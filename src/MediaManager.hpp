@@ -10,7 +10,6 @@
 using namespace std;
 
 class MediaManager {
-	static int i;
 	map<string, SDL_Texture *> images;
 	public:
 	SDL_Texture *get(Game *game, string filename) {
@@ -20,7 +19,6 @@ class MediaManager {
 			surface=SDL_LoadBMP(filename.c_str());
 			if (surface == NULL) {
 				printf("LoadBMP failed: %s\n", SDL_GetError());
-				return;
 			}
 			cout << "surface loaded" << endl;
 		
@@ -29,7 +27,6 @@ class MediaManager {
 			texture = SDL_CreateTextureFromSurface(game->getRenderer(), surface);
 			if (texture == NULL) {
 				fprintf(stderr, "CreateTextureFromSurface failed: %s\n", SDL_GetError());
-				return;
 			}
 			images[filename] = texture;
 			cout << "texture created" << endl;
