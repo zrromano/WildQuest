@@ -6,11 +6,9 @@ using namespace std;
 
 class Sprite:public Animation {
 	float x,y,dx,dy,ax,ay;
-	int gw,gh,cameraW,cameraH;
+	int gw,gh;
 	bool dead, wallCollision;
 	SDL_Rect size;
-	SDL_Rect level_dimentions;
-	SDL_Rect camera;
 	public:
 	bool within(float otherX, float otherY){
 		return x<=otherX && otherX<=x+size.w && y<=otherY && otherY<=y+size.h;
@@ -24,16 +22,13 @@ class Sprite:public Animation {
 	}
 	Sprite(Game *g, string filename, int count=1, int fps=30, float _x=0.0, float _y=0.0, float _dx=0.0, float _dy=0.0, float spriteX=0.0, float spriteY=0.0):
 	  Animation(g, filename, count, fps, spriteX, spriteY){
-		level_dimentions = g->getLevelDimentions();
-		camera = g->getResolution();
 		x = _x;
 		y = _y;
 		dx = _dx;
 		dy = _dy;
-		gw = level_dimentions.w;
-		gh = level_dimentions.h;
-		cameraW = camera.w;
-		cameraH = camera.h;
+		SDL_Rect resolution = g->getResolution();
+		gw = resolution.w;
+		gh = resolution.h;
 		dead = false;
 		size = getSize();
 	}
@@ -84,41 +79,12 @@ class Sprite:public Animation {
 	void Render(Game *g, int setX=-1, int setY=-1){
 		if(setX != -1 && setY != -1) {
 			//cout << "pre-render" << endl;
-			//Getting the correct location for the camera to center it on the player
-			camera.x = (setX + 128 / 2 ) - cameraW / 2; 
-			camera.y = (setY + 128 / 2 ) - cameraH / 2;
-			//Keep the camera in bounds
-			cout << "Camera X: " << camera.x << endl;
-			cout << "Camera Y: " << camera.y << endl;
-            if( camera.x < 0 )
-                    camera.x = 0;
-            if( camera.y < 0 )
-                    camera.y = 0;
-            if( camera.x > gw - camera.w )
-                    camera.x = gw - camera.w;
-            if( camera.y > gh - camera.h )
-                    camera.y = gh - camera.h;
-			Animation::Render(g, camera.x, camera.y);
+			Animation::Render(g, setX, setY);
 			//cout << "Sprite rendered at " << setX << " " << setY << endl;
 		}
 		else {
-			//Getting the correct location for the camera to center it on the player
-			camera.x = (setX + 128 / 2 ) - cameraW / 2; 
-			camera.y = (setY + 128 / 2 ) - cameraH / 2;
-			//Keep the camera in bounds
-			cout << "Camera X: " << camera.x << endl;
-			cout << "Camera Y: " << camera.y << endl;
-            if( camera.x < 0 )
-                    camera.x = 0;
-            if( camera.y < 0 )
-                    camera.y = 0;
-            if( camera.x > gw - camera.w )
-                    camera.x = gw - camera.w;
-            if( camera.y > gh - camera.h )
-                    camera.y = gh - camera.h;
-			Animation::Render(g, camera.x, camera.y);
 			//cout << "pre-render" << endl;
-			//Animation::Render(g,(int)x,(int)y);
+			Animation::Render(g,(int)x,(int)y);
 			//cout << "Sprite rendered at " << x << " " << y << endl;
 		}
 	}
