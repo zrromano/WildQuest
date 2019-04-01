@@ -12,15 +12,17 @@ using namespace std;
 class Game{
 	SDL_Window *window;
 	SDL_Renderer *renderer;
-	SDL_Rect resolution;
+	SDL_Rect resolution, level_dimentions; 
 	bool inGameLoop;
 	int mouseX; //For keeping track of where the mouse curson is on screen
 	int mouseY;
 	public:
 	const Uint8 *keystate;
-	Game(string title, int width=1280, int height=720){
+	Game(string title, int width=1280, int height=720, int level_width = 10000, int level_height = 10000){
 		resolution.w = width;
 		resolution.h = height;
+		level_dimentions.w = level_width;
+		level_dimentions.h = level_height;
 		SDL_Init(SDL_INIT_VIDEO);
 		
 		window = NULL;
@@ -65,6 +67,7 @@ class Game{
 	
 	SDL_Renderer *getRenderer(){ return renderer; }
 	SDL_Rect getResolution(){ return resolution; }
+	SDL_Rect getLevelDimentions() {return level_dimentions; }
 	SDL_Window *getWindow() { return window; }
 	void setInGameLoop(bool _inGameLoop) { inGameLoop = _inGameLoop; }
 	void run(){
