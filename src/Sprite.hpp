@@ -27,8 +27,9 @@ class Sprite:public Animation {
 		dx = _dx;
 		dy = _dy;
 		SDL_Rect resolution = g->getResolution();
-		gw = resolution.w;
-		gh = resolution.h;
+		SDL_Rect level_dimentions = g->getLevelDimentions();
+		gw = level_dimentions.w;
+		gh = level_dimentions.h;
 		dead = false;
 		size = getSize();
 	}
@@ -83,6 +84,7 @@ class Sprite:public Animation {
 			//cout << "Sprite rendered at " << setX << " " << setY << endl;
 		}
 		else {
+			
 			//cout << "pre-render" << endl;
 			Animation::Render(g,(int)x,(int)y);
 			//cout << "Sprite rendered at " << x << " " << y << endl;
