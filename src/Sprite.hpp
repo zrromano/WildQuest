@@ -77,12 +77,12 @@ class Sprite:public Animation {
 	}
 	}
 	void Render(Game *g, int setX=-1, int setY=-1){
-		if(setX != -1 && setY != -1) {
+		if(setX != -1 && setY != -1 && !dead) {
 			//cout << "pre-render" << endl;
 			Animation::Render(g, setX, setY);
 			//cout << "Sprite rendered at " << setX << " " << setY << endl;
 		}
-		else {
+		else if (!dead){
 			//cout << "pre-render" << endl;
 			Animation::Render(g,(int)x,(int)y);
 			//cout << "Sprite rendered at " << x << " " << y << endl;
@@ -94,6 +94,7 @@ class Sprite:public Animation {
 	void setDx(float _dx){ dx = _dx; }
 	void setDy(float _dy){ dy = _dy; }
 	void kill(){ dead = true; }
+	bool isDead(){ return dead; }
 	float getDx(){ return dx; }
 	float getDy(){ return dy; }
 	float getX() { return x; }

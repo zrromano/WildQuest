@@ -10,5 +10,13 @@ class Projectile: public Sprite{
 	Projectile(Game *g, string filename, float _x=0.0, float _y=0.0, float _dx=0.0, float _dy=0.0, int _damage=0, int count=1, int fps=1, float spriteX=0.0, float spriteY=0.0):
 	  Sprite(g, filename, count, fps, _x, _y, _dx, _dy, spriteX, spriteY){
 		damage = _damage; 
-	}	
+	}
+	
+	void update(float dt /* in ms */, int setFrame=-1){
+		Sprite::update(dt, setFrame);
+		if (this->collision()){
+			this->kill();
+		}
+	}
+			
 };

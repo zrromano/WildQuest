@@ -1,5 +1,4 @@
 //Note: strip command in command prompt will shrink filesize
-#include "SDL.h"
 #include <stdio.h>
 #include <iostream>
 #include <iomanip>
@@ -7,6 +6,10 @@
 #include <vector>
 #include <sstream>
 #include <map>
+
+#include "SDL.h"
+#include "SDL_mixer.h"
+
 #include "MediaManager.hpp"
 #include "Game.hpp"
 #include "Image.hpp"
@@ -213,8 +216,14 @@ class MyGame:public Game {
 			break;
 			case Running: 
 				player->update(dt, player->getFrame());
-				for(int i = 0; i < projectiles.size(); i++)
-				projectiles[i]->update(dt);
+				for(int i = 0; i < projectiles.size(); i++){
+					if(projectiles[i]->isDead()){
+						projectiles.erase(projectiles.begin() + i);
+						i--;
+					}
+					else	
+						projectiles[i]->update(dt);
+				}
 			break;
 			case Pause:
 				
