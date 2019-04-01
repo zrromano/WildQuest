@@ -43,7 +43,7 @@ class Image{
 			dest.y = y;
 			SDL_Renderer *renderer = game->getRenderer();
 			SDL_RenderCopy(renderer, texture, &src, &dest);
-			//cout << "image rendered at " << x << " " << y << endl;
+			cout << "image rendered at " << x << " " << y << endl;
 	}
 	
 	void setImageTint(int r, int g, int b){

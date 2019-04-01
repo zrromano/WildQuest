@@ -21,11 +21,13 @@ using namespace std;
 class MyGame:public Game {
 	Image *background, *TitleScreenBackground, *playSign, *pauseScreenBackground, *pauseLogo, *resumeImage, *mainMenuSign, *quitSign;
 	Player *player;
+	SDL_Rect camera;
 	SceneState *scene;
 	vector<Projectile *> projectiles;
 	public:
 	MyGame():Game("Wild Quest"){};
     void init(){
+		camera = {0, 0, 1280, 720};
 		scene = new SceneState(TitleScreen); //The Scene the game will start on
 		TitleScreenBackground = new Image(this, "../res/titleScreenBack.bmp");
 		playSign = new Image(this, "../res/playSign.bmp");
@@ -214,6 +216,9 @@ class MyGame:public Game {
 			break;
 			case Running: 
 				player->update(dt, player->getFrame());
+				camera.x = player->getX() - (player->getW() / 2) - 640;
+				camera.y = player->getY() - (player->getH() / 2) - 360;
+				cout << "Camera x: " << camera.x << " Camera y:" << camera.y;
 				for(int i = 0; i < projectiles.size(); i++)
 				projectiles[i]->update(dt);
 			break;
