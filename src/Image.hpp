@@ -8,6 +8,7 @@ class Image{
 	SDL_Texture *texture;
 	SDL_Rect src;
 	SDL_Rect dest;
+	SDL_Rect camera;
 	public:
 	Image(Game *game, string filename, int _x=0, int _y=0){
 		cout << filename << endl;
@@ -37,13 +38,16 @@ class Image{
 	};
 	
 	void Render(Game *game, int x=0, int y=0){
+			camera = game->getCameCameraPos();
 			dest.w = src.w;
 			dest.h = src.h;
-			dest.x = x;
-			dest.y = y;
+			dest.x = x - camera.x;
+			dest.y = y - camera.y;
+			//dest.x = x;
+			//dest.y = y;
 			SDL_Renderer *renderer = game->getRenderer();
 			SDL_RenderCopy(renderer, texture, &src, &dest);
-			cout << "image rendered at " << x << " " << y << endl;
+			//cout << "image rendered at " << x << " " << y << endl;
 	}
 	
 	void setImageTint(int r, int g, int b){

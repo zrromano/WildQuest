@@ -14,16 +14,18 @@ class Game{
 	SDL_Renderer *renderer;
 	SDL_Rect resolution;
 	SDL_Rect Level_Dimentions;
+	SDL_Rect GameCamera;
 	bool inGameLoop;
 	int mouseX; //For keeping track of where the mouse curson is on screen
 	int mouseY;
 	public:
 	const Uint8 *keystate;
-	Game(string title, int width=1280, int height=720, int Level_Width = 6400, int Level_Height = 6400){
+	Game(string title, int width=1280, int height=720, int Level_Width = 3200, int Level_Height = 3200){
 		resolution.w = width;
 		resolution.h = height;
 		Level_Dimentions.w = Level_Width;
 		Level_Dimentions.h = Level_Height;
+		GameCamera = {0, 0, width, height};
 		SDL_Init(SDL_INIT_VIDEO);
 		
 		window = NULL;
@@ -70,6 +72,8 @@ class Game{
 	SDL_Rect getResolution(){ return resolution; }
 	SDL_Window *getWindow() { return window; }
 	SDL_Rect getLevelDimentions(){return Level_Dimentions;}
+	void setGameCameraPos(SDL_Rect camera){GameCamera = camera;	}
+	SDL_Rect getCameCameraPos() {return GameCamera; }
 	void setInGameLoop(bool _inGameLoop) { inGameLoop = _inGameLoop; }
 	void run(){
 		SDL_Event event;

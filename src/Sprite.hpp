@@ -86,7 +86,7 @@ class Sprite:public Animation {
 		else {
 			
 			//cout << "pre-render" << endl;
-			Animation::Render(g,(int)x,(int)y);
+			Animation::Render(g,(int)x, (int)y);
 			//cout << "Sprite rendered at " << x << " " << y << endl;
 		}
 	}

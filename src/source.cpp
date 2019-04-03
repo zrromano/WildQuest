@@ -92,7 +92,7 @@ class MyGame:public Game {
 			
 		if(keystate[SDL_SCANCODE_RIGHT] && player->canShoot()){
 			player->setFrame(0);
-			Projectile *projectile = new Projectile(this,"../res/bullet", 
+			Projectile *projectile = new Projectile(this,"../res/bullet",
 											(player->getX() + player->getW() - 28), 
 											(player->getY() + (player->getH()/2)), 
 											((player->getDx()/2) + 400), 
@@ -103,7 +103,7 @@ class MyGame:public Game {
 		}
 		else if(keystate[SDL_SCANCODE_LEFT] && player->canShoot()){
 			player->setFrame(1);
-			Projectile *projectile = new Projectile(this,"../res/bullet",  
+			Projectile *projectile = new Projectile(this,"../res/bullet", 
 											(player->getX() + 20), 
 											(player->getY() + (player->getH()/2)), 
 											(player->getDx()/2 - 400), 
@@ -125,7 +125,7 @@ class MyGame:public Game {
 		}
 		else if(keystate[SDL_SCANCODE_UP] && player->canShoot()){
 			player->setFrame(3);
-			Projectile *projectile = new Projectile(this,"../res/bullet", 
+			Projectile *projectile = new Projectile(this,"../res/bullet",
 											(player->getX() + (player->getW()/2)), 
 											player->getY(), 
 											(player->getDx() * 0.8), 
@@ -212,13 +212,16 @@ class MyGame:public Game {
 	void update(float dt){
 		switch( scene->getCurrentScene() ) {
 			case TitleScreen:
-				
+				camera = {0, 0, 1280, 720};
+				this-> setGameCameraPos(camera);
 			break;
 			case Running: 
 				player->update(dt, player->getFrame());
-				camera.x = player->getX() - (player->getW() / 2) - 640;
-				camera.y = player->getY() - (player->getH() / 2) - 360;
-				cout << "Camera x: " << camera.x << " Camera y:" << camera.y;
+				//Camera Centered on the Player
+				camera.x = player->getX() + (player->getW() / 2) - (camera.w / 2);
+				camera.y = player->getY() + (player->getH() / 2) - (camera.h / 2);
+				this->setGameCameraPos(camera);
+				//cout << "Camera x: " << camera.x << " Camera y:" << camera.y;
 				for(int i = 0; i < projectiles.size(); i++)
 				projectiles[i]->update(dt);
 			break;
@@ -246,9 +249,9 @@ class MyGame:public Game {
 			break;
 			case Pause:
 				// cout << "Paused" << endl;
-				pauseLogo->Render(this, Game::getResolution().w / 2 - 100, Game::getResolution().h / 2 - 300);
-				resumeImage->Render(this, Game::getResolution().w / 2 - 150, Game::getResolution().h / 2 - 100);
-				mainMenuSign->Render(this, Game::getResolution().w / 2 - 150, Game::getResolution().h / 2 + 200);
+				pauseLogo->Render(this, camera.x + (camera.w / 2) - 100 , camera.y + (camera.h / 2) - 300);
+				resumeImage->Render(this, camera.x + (camera.w / 2) - 150, camera.y + (camera.h / 2) - 100);
+				mainMenuSign->Render(this, camera.x + (camera.w / 2) - 150, camera.y + (camera.h / 2) + 200);
 				SDL_RenderPresent(renderer);
 			break;
 		}
