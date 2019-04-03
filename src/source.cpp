@@ -32,12 +32,13 @@ class MyGame:public Game {
 		TitleScreenBackground = new Image(this, "../res/titleScreenBack.bmp");
 		playSign = new Image(this, "../res/playSign.bmp");
 		background = new Image(this, "../res/back.bmp");
-		player = new Player(this, "../res/playerSprite");
 		//pauseScreenBackground = new Image(this, "../res/pauseBackground.bmp");
 		pauseLogo = new Image(this, "../res/pauseLogo.bmp"); 
 		resumeImage = new Image(this, "../res/resumeSign.bmp");
 		mainMenuSign = new Image(this, "../res/mainMenuSign.bmp");
 		quitSign = new Image(this, "../res/quitSign.bmp");
+		
+		player = new Player(this, "../res/playerSprite", 4, 1, 1000, 1000);
 	}
 	
 	
