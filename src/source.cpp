@@ -15,6 +15,7 @@
 #include "Player.hpp"
 #include "SceneState.hpp"
 #include "Projectile.hpp"
+#include "TillingEngine.hpp"
 
 using namespace std;
 
