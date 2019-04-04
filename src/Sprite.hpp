@@ -7,19 +7,9 @@ using namespace std;
 class Sprite:public Animation {
 	float x,y,dx,dy,ax,ay;
 	int gw,gh;
-	bool dead, wallCollision;
+	bool dead, friendly, wallCollision, spriteCollision;
 	SDL_Rect size;
 	public:
-	bool within(float otherX, float otherY){
-		return x<=otherX && otherX<=x+size.w && y<=otherY && otherY<=y+size.h;
-	}
-	bool collidesWith(Sprite &other){
-		SDL_Rect them = other.getSize();
-		return within(other.x, other.y) || 
-				within(other.x + them.w, other.y) ||
-				within(other.x + them.w, other.y + them.h) ||
-				within(other.x, other.y + them.h);
-	}
 	Sprite(Game *g, string filename, int count=1, int fps=30, float _x=0.0, float _y=0.0, float _dx=0.0, float _dy=0.0, float spriteX=0.0, float spriteY=0.0):
 	  Animation(g, filename, count, fps, spriteX, spriteY){
 		x = _x;
@@ -37,11 +27,6 @@ class Sprite:public Animation {
 		y=(float)(rand() % gh);
 		dx=(float)((rand()% (40*100))-2000)/100.0;
 		dy=(float)((rand()% (40*100))-2000)/100.0;
-	}
-	bool collision(){
-		bool ret = false;
-		if(wallCollision) ret = true;
-		return ret;
 	}
 	void update(float dt /* in ms */, int setFrame=-1){
 		if(wallCollision) wallCollision = false;
@@ -89,12 +74,36 @@ class Sprite:public Animation {
 		}
 	}
 	
+	bool collides(){
+		bool ret = false;
+		if(wallCollision) ret = true;
+		if(spriteCollision) ret = true;
+		return ret;
+	}
+	bool within(float otherX, float otherY){
+		return x<=otherX && otherX<=x+size.w && y<=otherY && otherY<=y+size.h;
+	}
+	bool collidesWith(Sprite &other){
+		spriteCollision = false;
+		SDL_Rect them = other.getSize();
+		if (within(other.x, other.y) || within(other.x + them.w, other.y) ||
+			within(other.x + them.w, other.y + them.h) || within(other.x, other.y + them.h)){
+			spriteCollision = true;
+		}
+		return spriteCollision;
+	}
+	
 	void accelerateX(float ddx) { dx += ddx; }
 	void accelerateY(float ddy) { dy += ddy; }
 	void setDx(float _dx){ dx = _dx; }
 	void setDy(float _dy){ dy = _dy; }
+	void setFriendly(bool _friendly){ friendly = _friendly; }
 	void kill(){ dead = true; }
+	
+	bool getSpriteCollision(){ return spriteCollision; }
 	bool isDead(){ return dead; }
+	bool isFriendly(){ return friendly; }
+	
 	float getDx(){ return dx; }
 	float getDy(){ return dy; }
 	float getX() { return x; }

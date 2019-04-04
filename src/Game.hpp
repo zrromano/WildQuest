@@ -6,6 +6,7 @@
 #include <string>
 
 #include "SDL.h"
+#include "SDL_mixer.h"
 
 using namespace std;
 
@@ -49,8 +50,19 @@ class Game{
 		}
 		cout << "renderer created" << endl;
 		keystate = SDL_GetKeyboardState(NULL);
+		/*int flags = 0;
+		int initted = Mix_Init(flags);
+		if(initted & flags != flags) {
+		   //eror message
+		}
+		int audio = Mix_OpenAudio(MIX_DEFAULT_FREQUENCY, MIX_DEFAULT_FORMAT, 2, 2048);
+		if(audio == -1){
+			//error message
+		}*/
 	}
 	~Game(){
+		//Mix_CloseAudio();
+		//Mix_Quit();
 		SDL_DestroyWindow(window);
 		SDL_Quit();
 	}

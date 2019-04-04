@@ -15,9 +15,10 @@
 #include "Image.hpp"
 #include "Animation.hpp"
 #include "Sprite.hpp"
-#include "Player.hpp"
-#include "SceneState.hpp"
 #include "Projectile.hpp"
+#include "Player.hpp"
+#include "Enemy.hpp"
+#include "SceneState.hpp"
 
 using namespace std;
 
@@ -26,6 +27,7 @@ class MyGame:public Game {
 	Player *player;
 	SceneState *scene;
 	vector<Projectile *> projectiles;
+	vector<Enemy *> enemies;
 	public:
 	MyGame():Game("Wild Quest"){};
     void init(){
@@ -33,7 +35,9 @@ class MyGame:public Game {
 		TitleScreenBackground = new Image(this, "../res/titleScreenBack.bmp");
 		playSign = new Image(this, "../res/playSign.bmp");
 		background = new Image(this, "../res/back.bmp");
-		player = new Player(this, "../res/playerSprite");
+		player = new Player(this, "../res/playerSprite", 10);
+		Enemy *newEnemy = new Enemy(this, "../res/playerSprite", 10, 4, 1, 20, 100);
+		enemies.push_back(newEnemy);
 		//pauseScreenBackground = new Image(this, "../res/pauseBackground.bmp");
 		pauseLogo = new Image(this, "../res/pauseLogo.bmp"); 
 		resumeImage = new Image(this, "../res/resumeSign.bmp");
@@ -92,45 +96,45 @@ class MyGame:public Game {
 			
 		if(keystate[SDL_SCANCODE_RIGHT] && player->canShoot()){
 			player->setFrame(0);
-			Projectile *projectile = new Projectile(this,"../res/bullet", 
+			Projectile *projectile = new Projectile(this,"../res/bullet", true,
 											(player->getX() + player->getW() - 28), 
 											(player->getY() + (player->getH()/2)), 
 											((player->getDx()/2) + 400), 
 											(player->getDy() * 0.8),
-											0);
+											5);
 			projectiles.push_back(projectile);
 			player->shoot();
 		}
 		else if(keystate[SDL_SCANCODE_LEFT] && player->canShoot()){
 			player->setFrame(1);
-			Projectile *projectile = new Projectile(this,"../res/bullet",  
+			Projectile *projectile = new Projectile(this,"../res/bullet", true,
 											(player->getX() + 20), 
 											(player->getY() + (player->getH()/2)), 
 											(player->getDx()/2 - 400), 
 											(player->getDy() * 0.8),
-											0);
+											5);
 			projectiles.push_back(projectile);
 			player->shoot();
 		}
 		else if(keystate[SDL_SCANCODE_DOWN] && player->canShoot()){
 			player->setFrame(2);
-			Projectile *projectile = new Projectile(this,"../res/bullet", 
+			Projectile *projectile = new Projectile(this,"../res/bullet", true,
 											(player->getX() + (player->getW()/2)), 
 											(player->getY() + player->getH()), 
 											(player->getDx() * 0.8), 
 											(player->getDy()/2 + 400),
-											0);
+											5);
 			projectiles.push_back(projectile);
 			player->shoot();
 		}
 		else if(keystate[SDL_SCANCODE_UP] && player->canShoot()){
 			player->setFrame(3);
-			Projectile *projectile = new Projectile(this,"../res/bullet", 
+			Projectile *projectile = new Projectile(this,"../res/bullet", true,
 											(player->getX() + (player->getW()/2)), 
 											player->getY(), 
 											(player->getDx() * 0.8), 
 											(player->getDy()/2 - 400),
-											0);
+											5);
 			projectiles.push_back(projectile);
 			player->shoot();
 		} else { player->noShoot(); }
@@ -216,6 +220,11 @@ class MyGame:public Game {
 			break;
 			case Running: 
 				player->update(dt, player->getFrame());
+				for(int i = 0; i < projectiles.size(); i++){
+						player->hitByProjectile(projectiles[i]);
+						for(int j = 0; j < enemies.size(); j++)
+							enemies[j]->hitByProjectile(projectiles[i]);
+					}
 				for(int i = 0; i < projectiles.size(); i++){
 					if(projectiles[i]->isDead()){
 						projectiles.erase(projectiles.begin() + i);
