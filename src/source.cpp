@@ -233,6 +233,14 @@ class MyGame:public Game {
 					else	
 						projectiles[i]->update(dt);
 				}
+				for(int i = 0; i < enemies.size(); i++){
+					if(enemies[i]->isDead()){
+						enemies.erase(enemies.begin() + i);
+						i--;
+					}
+					else	
+						enemies[i]->update(dt);
+				}
 			break;
 			case Pause:
 				
@@ -254,6 +262,8 @@ class MyGame:public Game {
 				player->Render(this);
 				for(int i = 0; i < projectiles.size(); i++)
 					projectiles[i]->Render(this);
+				for(int i = 0; i < enemies.size(); i++)
+					enemies[i]->Render(this);
 				SDL_RenderPresent(renderer);
 			break;
 			case Pause:

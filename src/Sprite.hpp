@@ -98,6 +98,7 @@ class Sprite:public Animation {
 	void setDx(float _dx){ dx = _dx; }
 	void setDy(float _dy){ dy = _dy; }
 	void setFriendly(bool _friendly){ friendly = _friendly; }
+	void setSpriteCollision(bool _collision){ spriteCollision = _collision; }
 	void kill(){ dead = true; }
 	
 	bool getSpriteCollision(){ return spriteCollision; }

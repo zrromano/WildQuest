@@ -25,14 +25,15 @@ class Enemy:public Sprite{
 			this->kill();
 		}
 	}
-	bool hitByProjectile(Projectile &other){
+	bool hitByProjectile(Projectile *other){
 		bool ret;
-		SDL_Rect them = other.getSize();
-		if(other.isFriendly())
-			if (Sprite::within(other.getX(), other.getY()) || Sprite::within(other.getX() + them.w, other.getY()) ||
-			Sprite::within(other.getX() + them.w, other.getY() + them.h) || Sprite::within(other.getX(), other.getY() + them.h)){
+		SDL_Rect them = other->getSize();
+		if(other->isFriendly())
+			if (Sprite::within(other->getX(), other->getY()) || Sprite::within(other->getX() + them.w, other->getY()) ||
+			Sprite::within(other->getX() + them.w, other->getY() + them.h) || Sprite::within(other->getX(), other->getY() + them.h)){
 					ret = true;
-					currentHealth -= other.getDamage();
+					currentHealth -= other->getDamage();
+					other->kill();
 				}
 		return ret;
 	}

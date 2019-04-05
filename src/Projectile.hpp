@@ -1,8 +1,6 @@
 #pragma once
 
 #include "Sprite.hpp"
-#include "Player.hpp"
-#include "Enemy.hpp"
 
 using namespace std;
 
