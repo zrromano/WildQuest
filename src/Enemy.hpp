@@ -24,7 +24,21 @@ class Enemy:public Sprite{
 		if (currentHealth <= 0){
 			this->kill();
 		}
+		
+		/*
+		 * 
+		 *if( targetInRange)
+		 *	fireAtTarget
+		 *else if( bulletComingTowardMe )
+		 * 	avoidBullet
+		 *else
+		 * 	wanderAimlessly
+		 * 
+		 */ 
+			
 	}
+	
+	
 	bool hitByProjectile(Projectile *other){
 		bool ret;
 		SDL_Rect them = other->getSize();
