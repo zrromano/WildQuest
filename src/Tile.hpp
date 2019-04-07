@@ -4,20 +4,27 @@
 
 using namespace std;
 
-Class Tile:public Sprite{
-	Const int tilesize = 64;
+class Tile{
+	const int tilesize = 64;
 	int TileType;
 	SDL_Rect mBox;
 	
 	public:
-	Tile(Game *g, string filename, int type, int count=4, int fps=1, float _x=0.0, float _y=0.0, float _dx=0.0, float _dy=0.0, float spriteX=0.0, float spriteY=0.0):
-	Sprite(g, filename, count, fps, _x, _y, _dx, _dy, spriteX, spriteY){
-		TileType = type;
+	Tile(int _x = 0, int _y = 0, int type = 0){
 		mBox.x = _x;
 		mBox.y = _y;
 		mBox.w = tilesize;
 		mBox.h = tilesize;
+		TileType = type;
 	}
 	int getTileType(){return TileType;}
 	SDL_Rect getMBox(){return mBox;}
+	void setTileX(int _x){mBox.x = _x;}
+	void setTileY(int _y){mBox.y = _y;}
+	void setTileType(int type){TileType = type;}
+	void setTileProperties(int type, int _x, int _y){
+		mBox.x = _x;
+		mBox.y = _y;
+		TileType = type;
+	}
 };

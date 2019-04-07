@@ -74,6 +74,7 @@ class Game{
 	SDL_Rect getLevelDimentions(){return Level_Dimentions;}
 	void setGameCameraPos(SDL_Rect camera){GameCamera = camera;	}
 	SDL_Rect getCameCameraPos() {return GameCamera; }
+	
 	void setInGameLoop(bool _inGameLoop) { inGameLoop = _inGameLoop; }
 	void run(){
 		SDL_Event event;

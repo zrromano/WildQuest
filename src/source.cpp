@@ -7,6 +7,7 @@
 #include <vector>
 #include <sstream>
 #include <map>
+
 #include "MediaManager.hpp"
 #include "Game.hpp"
 #include "Image.hpp"
@@ -15,6 +16,7 @@
 #include "Player.hpp"
 #include "SceneState.hpp"
 #include "Projectile.hpp"
+#include "Tile.hpp"
 #include "TillingEngine.hpp"
 
 using namespace std;
@@ -29,16 +31,17 @@ class MyGame:public Game {
 	MyGame():Game("Wild Quest"){};
     void init(){
 		camera = {0, 0, 1280, 720};
-		scene = new SceneState(TitleScreen); //The Scene the game will start on
+		TillingEngine *tEngine = new TillingEngine(this, "../res/dev_tilesprites.bmp", "../level/dev_level.map");
+		scene = new SceneState(TitleScreen); //The Scene the game will start o
 		TitleScreenBackground = new Image(this, "../res/titleScreenBack.bmp");
 		playSign = new Image(this, "../res/playSign.bmp");
 		background = new Image(this, "../res/back.bmp");
-		//pauseScreenBackground = new Image(this, "../res/pauseBackground.bmp");
 		pauseLogo = new Image(this, "../res/pauseLogo.bmp"); 
 		resumeImage = new Image(this, "../res/resumeSign.bmp");
 		mainMenuSign = new Image(this, "../res/mainMenuSign.bmp");
 		quitSign = new Image(this, "../res/quitSign.bmp");
 		
+		//Player spawn at 1000, 1000 to avoid camera issues
 		player = new Player(this, "../res/playerSprite", 4, 1, 1000, 1000);
 	}
 	
