@@ -36,7 +36,7 @@ class MyGame:public Game {
 		playSign = new Image(this, "../res/playSign.bmp");
 		background = new Image(this, "../res/back.bmp");
 		player = new Player(this, "../res/playerSprite", 10);
-		Enemy *newEnemy = new Enemy(this, "../res/playerSprite", 10, 4, 1, 20, 100);
+		Enemy *newEnemy = new Enemy(this, "../res/outlawSprite", 10, 300, 1000, 150, 4, 1, 1000, 500);
 		enemies.push_back(newEnemy);
 		//pauseScreenBackground = new Image(this, "../res/pauseBackground.bmp");
 		pauseLogo = new Image(this, "../res/pauseLogo.bmp"); 
@@ -228,7 +228,6 @@ class MyGame:public Game {
 				for(int i = 0; i < projectiles.size(); i++){
 					if(projectiles[i]->isDead()){
 						projectiles.erase(projectiles.begin() + i);
-						i--;
 					}
 					else	
 						projectiles[i]->update(dt);
@@ -239,7 +238,7 @@ class MyGame:public Game {
 						i--;
 					}
 					else	
-						enemies[i]->update(dt);
+						enemies[i]->update(dt, player->getX(), player->getY());
 				}
 			break;
 			case Pause:
