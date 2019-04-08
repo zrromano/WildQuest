@@ -26,6 +26,7 @@ class TillingEngine{
 	SDL_Rect Level_Dimentions;
 	SDL_Rect Tile_Clip[ TOTAL_TILE_SPRITES ];
 	
+	//Creating Clip maks to select the correct sprite on the sprite sheet
 	vector < Tile_Image_Pair > tiles;
 	
 	public:

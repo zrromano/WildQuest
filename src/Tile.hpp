@@ -19,6 +19,8 @@ class Tile{
 	}
 	int getTileType(){return TileType;}
 	SDL_Rect getMBox(){return mBox;}
+	int getTileYPos(){return mBox.y;}
+	int getTileXPos(){return mBox.x;}
 	void setTileX(int _x){mBox.x = _x;}
 	void setTileY(int _y){mBox.y = _y;}
 	void setTileType(int type){TileType = type;}

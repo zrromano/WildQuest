@@ -40,10 +40,17 @@ class Image{
 	
 	void Render(Game *game, int x=0, int y=0){
 		if(clip.x != -1 && clip.y != -1){
-			
+			//cout << "Rendering W/ Clip" << endl;
+			dest.w = clip.w;
+			dest.h = clip.h;
+			dest.x = x - camera.x;
+			dest.y = y - camera.y;
+			SDL_Renderer *renderer = game->getRenderer();
+			SDL_RenderCopy(renderer, texture, &src, &dest);
 		}
 		
 		else{
+			//cout << "Rendering w/o Clip" << endl;
 			camera = game->getCameCameraPos();
 			dest.w = src.w;
 			dest.h = src.h;

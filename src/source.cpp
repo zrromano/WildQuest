@@ -23,6 +23,7 @@ using namespace std;
 
 class MyGame:public Game {
 	Image *background, *TitleScreenBackground, *playSign, *pauseScreenBackground, *pauseLogo, *resumeImage, *mainMenuSign, *quitSign;
+	TillingEngine *tEngine;
 	Player *player;
 	SDL_Rect camera;
 	SceneState *scene;
@@ -246,7 +247,8 @@ class MyGame:public Game {
 				SDL_RenderPresent(renderer);
 			break;
 			case Running:
-				background->Render(this);
+				//background->Render(this);
+				tEngine->RenderTiles(this);
 				player->Render(this);
 				for(int i = 0; i < projectiles.size(); i++)
 					projectiles[i]->Render(this);
