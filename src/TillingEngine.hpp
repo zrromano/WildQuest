@@ -51,11 +51,11 @@ class TillingEngine{
 	}
 	
 	bool readMap(Game *g, string spritesheet, string mapfile){
-		fstream outputfile("outfile.txt"); 
+		/*fstream outputfile("outfile.txt"); 
 		if(!outputfile.is_open()){
 			cout << "Error opening output file." << endl;
 			
-		}
+		}*/
 		bool success = true;
 		int x = 0, y = 0; //initial tile offest values
 		ifstream map(mapfile);
@@ -66,7 +66,7 @@ class TillingEngine{
 				//cout << "Tile Number: " << i << endl;
 				int tileType = -1; //initial tile type value that is not valid
 				map >> tileType;
-				outputfile << "Tile Type: " << tileType << endl;
+				//outputfile << "Tile Type: " << tileType << endl;
 				if (map.fail()){
 					cout << "Error Reading Map File: Unexpected End of File!" << endl;
 					success = false;
@@ -75,12 +75,12 @@ class TillingEngine{
 				if( ( tileType >= 0 ) && ( tileType < TOTAL_TILE_SPRITES ) )
 				{
                 tempTile->setTileProperties(tileType, x, y);
-                outputfile << "Created New Tile w/ Properties: " << tempTile->getTileXPos() << ", " << tempTile->getTileYPos() << endl;
+                //outputfile << "Created New Tile w/ Properties: " << tempTile->getTileXPos() << ", " << tempTile->getTileYPos() << endl;
                 //Next I need to icrement x value, then pair tile with image + sprite offset and push them into the vector
                 x = x + TILE_WIDTH;
                 if (x >= Level_Dimentions.w)
 					{
-						outputfile << "X is out of tile bounds! Updating to 0" << endl;
+						//outputfile << "X is out of tile bounds! Updating to 0" << endl;
 						x = 0;
 						y = y + TILE_HEIGHT;
 					}
@@ -91,32 +91,19 @@ class TillingEngine{
 					break;
 				}
 				Image *tileImage = new Image(g, spritesheet, Tile_Clip[tileType].x, Tile_Clip[tileType].y);
-				outputfile << "Tile Clip " << Tile_Clip[tileType].x << " ," << Tile_Clip[tileType].y << endl;
+				//outputfile << "Tile Clip " << Tile_Clip[tileType].x << " ," << Tile_Clip[tileType].y << endl;
 				tiles.push_back(Tile_Image_Pair(tileImage, tempTile));
-				outputfile << "Tile and Image Pair placed at vector index " << i << endl;
-				outputfile << "Vector at index: " << i << ", properties: " << tiles[i].second->getTileXPos() << ", " << tiles[i].second->getTileYPos() << endl; 
+				//outputfile << "Tile and Image Pair placed at vector index " << i << endl;
+				//outputfile << "Vector at index: " << i << ", properties: " << tiles[i].second->getTileXPos() << ", " << tiles[i].second->getTileYPos() << endl; 
 			}
 		}
-		outputfile << "Finished Reading Map File.  Total Vector Size: " << tiles.size();
-		/*TODO: REMOVE
-		outputfile << "=======================" << endl << endl;
-		for(int i = 1; i < TOTAL_TILES; ++i){
-			outputfile << "Rendering Tile: " << i << endl;
-			outputfile << "Vector at index: " << i << ", properties: " << tiles[i].second->getTileXPos() << ", " << tiles[i].second->getTileYPos() << endl; 
-			outputfile << "Rendering at Pos: " << tiles[i].second->getTileXPos() << ", " << tiles[i].second->getTileYPos() << endl;
-			tiles[i].first->Render(g, tiles[i].second->getTileXPos(), tiles[i].second->getTileYPos());
-		}
-		TODO: End Remove*/
-		//RenderTiles(g);
 		return success;
 	}
 
 	void RenderTiles(Game *g){
-		
-		cout << "Render Tiles Called" << endl;
 		//cout << "Vector Size: " << tiles.size() << endl;
 		for(int i = 1; i < TOTAL_TILES; ++i){
-			cout << "Rendering Tile: " << i << endl;
+			//cout << "Rendering Tile: " << i << endl;
 			//tiles[i].second->tileDebug();
 			tiles[i].first->Render(g, tiles[i].second->getTileXPos(), tiles[i].second->getTileYPos());
 		}
