@@ -32,7 +32,7 @@ class MyGame:public Game {
 	MyGame():Game("Wild Quest"){};
     void init(){
 		camera = {0, 0, 1280, 720};
-		TillingEngine *tEngine = new TillingEngine(this, "../res/dev_tilesprites.bmp", "../level/dev_level.map");
+		tEngine = new TillingEngine(this, "../res/dev_tilesprites.bmp", "../level/dev_level.map");
 		scene = new SceneState(TitleScreen); //The Scene the game will start o
 		TitleScreenBackground = new Image(this, "../res/titleScreenBack.bmp");
 		playSign = new Image(this, "../res/playSign.bmp");

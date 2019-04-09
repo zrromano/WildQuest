@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Sprite.hpp"
+#include "Game.hpp"
 
 using namespace std;
 
@@ -16,7 +16,7 @@ class Tile{
 		mBox.w = tilesize;
 		mBox.h = tilesize;
 		TileType = type;
-	}
+	};
 	int getTileType(){return TileType;}
 	SDL_Rect getMBox(){return mBox;}
 	int getTileYPos(){return mBox.y;}
@@ -28,5 +28,9 @@ class Tile{
 		mBox.x = _x;
 		mBox.y = _y;
 		TileType = type;
+	}
+	
+	void tileDebug(){
+		cout << "Tile Debug Called! Tile Properties: x: " << mBox.x << ", y: " << mBox.y << endl;
 	}
 };

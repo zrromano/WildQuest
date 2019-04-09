@@ -20,7 +20,7 @@ class Game{
 	int mouseY;
 	public:
 	const Uint8 *keystate;
-	Game(string title, int width=1280, int height=720, int Level_Width = 3200, int Level_Height = 3200){
+	Game(string title, int width=1280, int height=720, int Level_Width = 2048, int Level_Height = 2048){
 		resolution.w = width;
 		resolution.h = height;
 		Level_Dimentions.w = Level_Width;

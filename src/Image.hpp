@@ -10,14 +10,15 @@ class Image{
 	SDL_Rect dest;
 	SDL_Rect camera;
 	SDL_Rect clip;
+	
 	public:
-	Image(Game *game, string filename, int _x=0, int _y=0, SDL_Rect SpriteClip = {-1, -1, -1, -1}){
+	Image(Game *game, string filename, int _x=0, int _y=0){
 		cout << filename << endl;
 		texture = mm.get(game, filename);
 		SDL_QueryTexture(texture,NULL,NULL,&src.w,&src.h);
 		src.x=_x;
 		src.y=_y;
-		clip = SpriteClip;
+		cout << "Created Image from " << filename << " with clip: " << _x << ", " << _y << endl;
 		/*SDL_Surface *surface;
 		surface=SDL_LoadBMP(filename.c_str());
 		if (surface == NULL) {
@@ -39,17 +40,6 @@ class Image{
 	};
 	
 	void Render(Game *game, int x=0, int y=0){
-		if(clip.x != -1 && clip.y != -1){
-			//cout << "Rendering W/ Clip" << endl;
-			dest.w = clip.w;
-			dest.h = clip.h;
-			dest.x = x - camera.x;
-			dest.y = y - camera.y;
-			SDL_Renderer *renderer = game->getRenderer();
-			SDL_RenderCopy(renderer, texture, &src, &dest);
-		}
-		
-		else{
 			//cout << "Rendering w/o Clip" << endl;
 			camera = game->getCameCameraPos();
 			dest.w = src.w;
@@ -61,7 +51,6 @@ class Image{
 			SDL_Renderer *renderer = game->getRenderer();
 			SDL_RenderCopy(renderer, texture, &src, &dest);
 			//cout << "image rendered at " << x << " " << y << endl;
-		}
 	}
 	
 	void setImageTint(int r, int g, int b){
@@ -72,4 +61,7 @@ class Image{
 	int getHeight(){return src.h; }
 	int getXPos(){return dest.x; }
 	int getYPos(){return dest.y; }
+	void imageDebug(){
+		cout << "Image Debug Called! Image Properties: x: " << src.x << ", y: " << src.y << endl;
+	}
 };
