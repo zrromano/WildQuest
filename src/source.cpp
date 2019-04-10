@@ -25,13 +25,14 @@ class MyGame:public Game {
 	Image *background, *TitleScreenBackground, *playSign, *pauseScreenBackground, *pauseLogo, *resumeImage, *mainMenuSign, *quitSign;
 	TillingEngine *tEngine;
 	Player *player;
-	SDL_Rect camera;
+	SDL_Rect camera, level_dimentions;
 	SceneState *scene;
 	vector<Projectile *> projectiles;
 	public:
 	MyGame():Game("Wild Quest"){};
     void init(){
 		camera = {0, 0, 1280, 720};
+		level_dimentions = this->getLevelDimentions();
 		tEngine = new TillingEngine(this, "../res/dev_tilesprites.bmp", "../level/dev_level.map");
 		scene = new SceneState(TitleScreen); //The Scene the game will start o
 		TitleScreenBackground = new Image(this, "../res/titleScreenBack.bmp");
@@ -221,16 +222,36 @@ class MyGame:public Game {
 				camera = {0, 0, 1280, 720};
 				this-> setGameCameraPos(camera);
 			break;
+			
 			case Running: 
-				player->update(dt, player->getFrame());
+				if(!(tEngine->checkCollision(player->getHitBox()))){
+					player->update(dt, player->getFrame());
+				}
 				//Camera Centered on the Player
 				camera.x = player->getX() + (player->getW() / 2) - (camera.w / 2);
 				camera.y = player->getY() + (player->getH() / 2) - (camera.h / 2);
+				if( camera.x < 0 )
+				{ 
+					camera.x = 0;
+				}
+				if( camera.y < 0 )
+				{
+					camera.y = 0;
+				}
+				if( camera.x > level_dimentions.w - camera.w )
+				{
+					camera.x = level_dimentions.w - camera.w;
+				}
+				if( camera.y > level_dimentions.h - camera.h )
+				{
+					camera.y = level_dimentions.h - camera.h;
+				}
 				this->setGameCameraPos(camera);
 				//cout << "Camera x: " << camera.x << " Camera y:" << camera.y;
 				for(int i = 0; i < projectiles.size(); i++)
-				projectiles[i]->update(dt);
+					projectiles[i]->update(dt);
 			break;
+			
 			case Pause:
 				
 			break;
