@@ -1,0 +1,16 @@
+ExeName		=WildQuest.exe
+Headers 	=Animation.hpp Game.hpp Image.hpp MediaManager.hpp Player.hpp Projectile.hpp SceneState.hpp Sprite.hpp
+Sources		=MediaManager.cpp
+SDLPATH		=C:\SDL\SDL2-2.0.9\i686-w64-mingw32
+SDLInclude	=$(SDLPATH)\include\SDL2
+LDPATH		=$(SDLPATH)\lib
+CFlags		=-static -I $(SDLInclude) -I $(MixerPath)/include/SDL2 -g
+LDFlags		=-L $(LDPATH) -L $(MixerLDPath) -lmingw32 -lSDL2main -lSDL2.dll -lSDL2_mixer.dll
+MixerPath 	=C:\SDL2_mixer-2.0.4\x86_64-w64-mingw32
+MixerLDPath	=$(MixerPath)\lib
+
+..\$(ExeName): source.cpp $(Headers) $(Sources)
+	g++  $(CFlags) -o $@ $< $(Sources) $(LDFlags)
+
+clean:
+	rm $(ExeName)

@@ -19,43 +19,33 @@
 #include "Player.hpp"
 #include "Enemy.hpp"
 #include "SceneState.hpp"
-#include "Tile.hpp"
-#include "TillingEngine.hpp"
-
 
 using namespace std;
 
 class MyGame:public Game {
 	Image *background, *TitleScreenBackground, *playSign, *pauseScreenBackground, *pauseLogo, *resumeImage, *mainMenuSign, *quitSign;
-	TillingEngine *tEngine;
 	Player *player;
-	SDL_Rect camera, level_dimentions;
 	SceneState *scene;
+	Mix_Chunk *crash;
 	vector<Projectile *> projectiles;
 	vector<Enemy *> enemies;
 	public:
 	MyGame():Game("Wild Quest"){};
     void init(){
-		camera = {0, 0, 1280, 720};
-		level_dimentions = this->getLevelDimentions();
-		tEngine = new TillingEngine(this, "../res/dev_tilesprites.bmp", "../level/dev_level.map");
-		scene = new SceneState(TitleScreen); //The Scene the game will start o
+		scene = new SceneState(TitleScreen); //The Scene the game will start on
 		TitleScreenBackground = new Image(this, "../res/titleScreenBack.bmp");
 		playSign = new Image(this, "../res/playSign.bmp");
 		background = new Image(this, "../res/back.bmp");
+		player = new Player(this, "../res/playerSprite", 10);
+		Enemy *newEnemy = new Enemy(this, "../res/outlawSprite", 10, 300, 1000, 150, 4, 1, 1000, 500);
+		enemies.push_back(newEnemy);
+		//pauseScreenBackground = new Image(this, "../res/pauseBackground.bmp");
 		pauseLogo = new Image(this, "../res/pauseLogo.bmp"); 
 		resumeImage = new Image(this, "../res/resumeSign.bmp");
 		mainMenuSign = new Image(this, "../res/mainMenuSign.bmp");
 		quitSign = new Image(this, "../res/quitSign.bmp");
-		
-		//Player spawn at 1000, 1000 to avoid camera issues
-		player = new Player(this, "../res/playerSprite", 10, 1, 1000, 1000);
-		
-		Enemy *newEnemy = new Enemy(this, "../res/outlawSprite", 10, 300, 1000, 150, 4, 1, 1000, 500);
-		enemies.push_back(newEnemy);
-		
+		crash=Mix_LoadWAV("crash.wav");
 	}
-	
 	
 	//keystate[SDL_SCANCODE_???] is a Uint8 array keeping track of current keyboard states
 	//1 = true = pressed
@@ -108,7 +98,6 @@ class MyGame:public Game {
 			
 		if(keystate[SDL_SCANCODE_RIGHT] && player->canShoot()){
 			player->setFrame(0);
-
 			Projectile *projectile = new Projectile(this,"../res/bullet", true,
 											(player->getX() + player->getW() - 28), 
 											(player->getY() + (player->getH()/2)), 
@@ -117,6 +106,7 @@ class MyGame:public Game {
 											5);
 			projectiles.push_back(projectile);
 			player->shoot();
+			Mix_PlayChannel(-1,crash,0);
 		}
 		else if(keystate[SDL_SCANCODE_LEFT] && player->canShoot()){
 			player->setFrame(1);
@@ -229,35 +219,10 @@ class MyGame:public Game {
 	void update(float dt){
 		switch( scene->getCurrentScene() ) {
 			case TitleScreen:
-				camera = {0, 0, 1280, 720};
-				this-> setGameCameraPos(camera);
+				
 			break;
-			
 			case Running: 
-				//Check if player is colliding with a tile
-				player->update(dt, player->getFrame(), tEngine->checkCollision(player->getHitBox()));
-				//Camera Centered on the Player
-				camera.x = player->getX() + (player->getW() / 2) - (camera.w / 2);
-				camera.y = player->getY() + (player->getH() / 2) - (camera.h / 2);
-				if( camera.x < 0 )
-				{ 
-					camera.x = 0;
-				}
-				if( camera.y < 0 )
-				{
-					camera.y = 0;
-				}
-				if( camera.x > level_dimentions.w - camera.w )
-				{
-					camera.x = level_dimentions.w - camera.w;
-				}
-				if( camera.y > level_dimentions.h - camera.h )
-				{
-					camera.y = level_dimentions.h - camera.h;
-				}
-				this->setGameCameraPos(camera);
-				for(int i = 0; i < projectiles.size(); i++)
-					projectiles[i]->update(dt);
+				player->update(dt, player->getFrame());
 				for(int i = 0; i < projectiles.size(); i++){
 						player->hitByProjectile(projectiles[i]);
 						for(int j = 0; j < enemies.size(); j++)
@@ -279,7 +244,6 @@ class MyGame:public Game {
 						enemies[i]->update(dt, player->getX(), player->getY());
 				}
 			break;
-			
 			case Pause:
 				
 			break;
@@ -296,8 +260,7 @@ class MyGame:public Game {
 				SDL_RenderPresent(renderer);
 			break;
 			case Running:
-				//background->Render(this);
-				tEngine->RenderTiles(this);
+				background->Render(this);
 				player->Render(this);
 				for(int i = 0; i < projectiles.size(); i++)
 					projectiles[i]->Render(this);
@@ -307,9 +270,9 @@ class MyGame:public Game {
 			break;
 			case Pause:
 				// cout << "Paused" << endl;
-				pauseLogo->Render(this, camera.x + (camera.w / 2) - 100 , camera.y + (camera.h / 2) - 300);
-				resumeImage->Render(this, camera.x + (camera.w / 2) - 150, camera.y + (camera.h / 2) - 100);
-				mainMenuSign->Render(this, camera.x + (camera.w / 2) - 150, camera.y + (camera.h / 2) + 200);
+				pauseLogo->Render(this, Game::getResolution().w / 2 - 100, Game::getResolution().h / 2 - 300);
+				resumeImage->Render(this, Game::getResolution().w / 2 - 150, Game::getResolution().h / 2 - 100);
+				mainMenuSign->Render(this, Game::getResolution().w / 2 - 150, Game::getResolution().h / 2 + 200);
 				SDL_RenderPresent(renderer);
 			break;
 		}
