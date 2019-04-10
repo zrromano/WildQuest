@@ -77,13 +77,13 @@ class Enemy:public Sprite{
 						if(abs(this->getDx()) <= maxSpeed)
 							this->accelerateX(-10);
 						if(abs(this->getDy()) <= maxSpeed)
-							this->accelerateY(-10);
+							this->accelerateY(-5);
 					}
 					else if(this->getY() < y){
 						if(abs(this->getDx()) <= maxSpeed)
 							this->accelerateX(-10);
 						if(abs(this->getDy()) <= maxSpeed)
-							this->accelerateY(10);
+							this->accelerateY(5);
 					}
 					else{
 						if(abs(this->getDx()) <= maxSpeed)
@@ -96,13 +96,13 @@ class Enemy:public Sprite{
 						if(abs(this->getDx()) < maxSpeed)
 							this->accelerateX(10);
 						if(abs(this->getDy()) < maxSpeed)
-							this->accelerateY(-10);
+							this->accelerateY(-5);
 					}
 					else if(this->getY() < y){
 						if(abs(this->getDx()) < maxSpeed)
 							this->accelerateX(10);
 						if(abs(this->getDy()) < maxSpeed)
-							this->accelerateY(10);
+							this->accelerateY(5);
 					}
 					else{
 						if(abs(this->getDx()) < maxSpeed)
@@ -117,13 +117,13 @@ class Enemy:public Sprite{
 						if(abs(this->getDy()) < maxSpeed)
 							this->accelerateY(-10);
 						if(abs(this->getDx()) < maxSpeed)
-							this->accelerateX(-10);
+							this->accelerateX(-5);
 					}
 					else if(this->getX() < x){
 						if(abs(this->getDy()) < maxSpeed)
 							this->accelerateY(-10);
 						if(abs(this->getDx()) < maxSpeed)
-							this->accelerateX(10);
+							this->accelerateX(5);
 					}
 					else{
 						if(abs(this->getDy()) < maxSpeed)
@@ -136,13 +136,13 @@ class Enemy:public Sprite{
 						if(abs(this->getDy()) < maxSpeed)
 							this->accelerateY(10);
 						if(abs(this->getDx()) < maxSpeed)
-							this->accelerateX(-10);
+							this->accelerateX(-5);
 					}
 					else if(this->getX() < x){
 						if(abs(this->getDy()) < maxSpeed)
 							this->accelerateY(10);
 						if(abs(this->getDx()) < maxSpeed)
-							this->accelerateX(10);
+							this->accelerateX(5);
 					}
 					else{
 						if(abs(this->getDy()) < maxSpeed)
