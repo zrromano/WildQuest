@@ -19,7 +19,7 @@ class Image{
 		src.x=_x;
 		src.y=_y;
 		spriteClip = clip;
-		cout << "Created Image from " << filename << " with clip: " << _x << ", " << _y << endl;
+		//cout << "Created Image from " << filename << " with clip: " << _x << ", " << _y << endl;
 	};
 	
 	void Render(Game *game, int x=0, int y=0){
