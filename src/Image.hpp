@@ -9,47 +9,40 @@ class Image{
 	SDL_Rect src;
 	SDL_Rect dest;
 	SDL_Rect camera;
-	SDL_Rect clip;
+	SDL_Rect spriteClip;
 	
 	public:
-	Image(Game *game, string filename, int _x=0, int _y=0){
+	Image(Game *game, string filename, int _x=0, int _y=0, SDL_Rect clip = {-1, -1, -1, -1}){
 		cout << filename << endl;
 		texture = mm.get(game, filename);
 		SDL_QueryTexture(texture,NULL,NULL,&src.w,&src.h);
 		src.x=_x;
 		src.y=_y;
+		spriteClip = clip;
 		cout << "Created Image from " << filename << " with clip: " << _x << ", " << _y << endl;
-		/*SDL_Surface *surface;
-		surface=SDL_LoadBMP(filename.c_str());
-		if (surface == NULL) {
-			printf("LoadBMP failed: %s\n", SDL_GetError());
-			return;
-		}
-		cout << "surface loaded" << endl;
-		
-		Uint32 colorKey = SDL_MapRGB(surface->format,0,255,0);
-		SDL_SetColorKey(surface, SDL_TRUE,colorKey);
-		texture = SDL_CreateTextureFromSurface(game->getRenderer(), surface);
-		SDL_QueryTexture(texture,NULL,NULL,&src.w,&src.h);
-		src.x=_x;
-		src.y=_y;
-		if (texture == NULL) {
-			fprintf(stderr, "CreateTextureFromSurface failed: %s\n", SDL_GetError());
-			return;
-		}*/
 	};
 	
 	void Render(Game *game, int x=0, int y=0){
+		camera = game->getCameCameraPos();
+		SDL_Renderer *renderer = game->getRenderer();
+			if(spriteClip.x > -1 && spriteClip.y > -1){
+				dest.w = spriteClip.w;
+				dest.h = spriteClip.h;
+				dest.x = x - camera.x;
+				dest.y = y - camera.y;
+				SDL_RenderCopy(renderer, texture, &spriteClip, &dest);
+			}
+			
+			else {
 			//cout << "Rendering w/o Clip" << endl;
-			camera = game->getCameCameraPos();
 			dest.w = src.w;
 			dest.h = src.h;
 			dest.x = x - camera.x;
 			dest.y = y - camera.y;
 			//dest.x = x;
 			//dest.y = y;
-			SDL_Renderer *renderer = game->getRenderer();
 			SDL_RenderCopy(renderer, texture, &src, &dest);
+		}
 			//cout << "image rendered at " << x << " " << y << endl;
 	}
 	
