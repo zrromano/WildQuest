@@ -48,6 +48,16 @@ class TillingEngine{
 		Tile_Clip[DEV_TILE_GREEN].w = TILE_WIDTH;
 		Tile_Clip[DEV_TILE_GREEN].h = TILE_HEIGHT;
 		
+		Tile_Clip[DEV_TILE_BLUE].x = 0;
+		Tile_Clip[DEV_TILE_BLUE].y = 64;
+		Tile_Clip[DEV_TILE_BLUE].w = TILE_WIDTH;
+		Tile_Clip[DEV_TILE_BLUE].h = TILE_HEIGHT;
+		
+		Tile_Clip[DEV_TILE_BROWN].x = 64;
+		Tile_Clip[DEV_TILE_BROWN].y = 64;
+		Tile_Clip[DEV_TILE_BROWN].w = TILE_WIDTH;
+		Tile_Clip[DEV_TILE_BROWN].h = TILE_HEIGHT;
+		
 		Level_Dimentions = g->getLevelDimentions();
 		if(!(readMap(g, spritesheet, levelfile))){
 			cout << "Could not load map file!" << endl;
