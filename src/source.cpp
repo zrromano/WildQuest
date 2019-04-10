@@ -224,9 +224,8 @@ class MyGame:public Game {
 			break;
 			
 			case Running: 
-				if(!(tEngine->checkCollision(player->getHitBox()))){
-					player->update(dt, player->getFrame());
-				}
+				//Check if player is colliding with a tile
+				player->update(dt, player->getFrame(), tEngine->checkCollision(player->getHitBox()));
 				//Camera Centered on the Player
 				camera.x = player->getX() + (player->getW() / 2) - (camera.w / 2);
 				camera.y = player->getY() + (player->getH() / 2) - (camera.h / 2);

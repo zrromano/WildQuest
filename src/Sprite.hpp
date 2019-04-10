@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Animation.hpp"
-#include "Tile.hpp"
 
 using namespace std;
 
@@ -45,7 +44,7 @@ class Sprite:public Animation {
 		if(wallCollision) ret = true;
 		return ret;
 	}
-	void update(float dt /* in ms */, int setFrame=-1){
+	void update(float dt /* in ms */, int setFrame=-1, bool tileCollision=false){
 		if(wallCollision) wallCollision = false;
 		if(!dead){
 		//Animation::update(dt, setFrame);
@@ -75,6 +74,9 @@ class Sprite:public Animation {
 			cout << "hit right wall" << endl;
 			dx = 0;
 			x = gw-size.w;
+		}
+		else if(tileCollision){
+			cout << "Collision with tile!" << endl;
 		}
 	}
 	}
