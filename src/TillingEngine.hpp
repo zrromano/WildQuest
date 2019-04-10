@@ -5,6 +5,7 @@
 
 #include "Image.hpp"
 #include "Tile.hpp"
+#include "Utilities.hpp"
 
 using namespace std;
 
@@ -16,11 +17,14 @@ class TillingEngine{
 	const int TILE_HEIGHT = 64;
 	static const int TOTAL_TILES = 1024;
 	
-	const static int TOTAL_TILE_SPRITES = 3;
+	const static int TOTAL_TILE_SPRITES = 5;
 	
 	const int DEV_TILE_BLACK = 0;
 	const int DEV_TILE_RED = 1;
-	const int DEV_TILE_BLUE = 2;
+	const int DEV_TILE_GREEN = 2;
+	const int DEV_TILE_BLUE = 3;
+	const int DEV_TILE_BROWN = 4;
+	
 	
 	SDL_Rect Level_Dimentions;
 	SDL_Rect Tile_Clip[ TOTAL_TILE_SPRITES ];
@@ -34,15 +38,15 @@ class TillingEngine{
 		Tile_Clip[DEV_TILE_BLACK].w = TILE_WIDTH;
 		Tile_Clip[DEV_TILE_BLACK].h = TILE_HEIGHT;
 	
-		Tile_Clip[DEV_TILE_RED].x = 63;
+		Tile_Clip[DEV_TILE_RED].x = 64;
 		Tile_Clip[DEV_TILE_RED].y = 0;
 		Tile_Clip[DEV_TILE_RED].w = TILE_WIDTH;
 		Tile_Clip[DEV_TILE_RED].h = TILE_HEIGHT;
 	
-		Tile_Clip[DEV_TILE_BLUE].x = 127;
-		Tile_Clip[DEV_TILE_BLUE].y = 0;
-		Tile_Clip[DEV_TILE_BLUE].w = TILE_WIDTH;
-		Tile_Clip[DEV_TILE_BLUE].h = TILE_HEIGHT;
+		Tile_Clip[DEV_TILE_GREEN].x = 128;
+		Tile_Clip[DEV_TILE_GREEN].y = 0;
+		Tile_Clip[DEV_TILE_GREEN].w = TILE_WIDTH;
+		Tile_Clip[DEV_TILE_GREEN].h = TILE_HEIGHT;
 		
 		Level_Dimentions = g->getLevelDimentions();
 		if(!(readMap(g, spritesheet, levelfile))){
@@ -61,7 +65,7 @@ class TillingEngine{
 		ifstream map(mapfile);
 		if(!map.is_open()) {cout << "Error Reading Map File" << endl;}
 		else{
-			for(int i = 0; i < TOTAL_TILES; ++i){
+			for(int i = 0; i < TOTAL_TILES; i++){
 				Tile *tempTile = new Tile();
 				//cout << "Tile Number: " << i << endl;
 				int tileType = -1; //initial tile type value that is not valid
@@ -90,7 +94,7 @@ class TillingEngine{
 					success = false;
 					break;
 				}
-				Image *tileImage = new Image(g, spritesheet, Tile_Clip[tileType].x, Tile_Clip[tileType].y);
+				Image *tileImage = new Image(g, spritesheet, Tile_Clip[tileType].x, Tile_Clip[tileType].y, Tile_Clip[tileType]);
 				//outputfile << "Tile Clip " << Tile_Clip[tileType].x << " ," << Tile_Clip[tileType].y << endl;
 				tiles.push_back(Tile_Image_Pair(tileImage, tempTile));
 				//outputfile << "Tile and Image Pair placed at vector index " << i << endl;
@@ -102,10 +106,22 @@ class TillingEngine{
 
 	void RenderTiles(Game *g){
 		//cout << "Vector Size: " << tiles.size() << endl;
-		for(int i = 1; i < TOTAL_TILES; ++i){
+		for(int i = 0; i < TOTAL_TILES; ++i){
 			//cout << "Rendering Tile: " << i << endl;
 			//tiles[i].second->tileDebug();
 			tiles[i].first->Render(g, tiles[i].second->getTileXPos(), tiles[i].second->getTileYPos());
+		}
+	}
+	
+	bool checkCollision(SDL_Rect mBox){
+		bool collision = false;
+		for(int i = 0; i < TOTAL_TILES; i++)
+		{
+			if( (tiles[i].second->getTileType() >= DEV_TILE_BLUE) && (tiles[i].second->getTileType() <= DEV_TILE_BROWN))
+			{
+				if(CollisionCheck(mBox, tiles[i].second->getMBox())) 
+					return true;
+			}
 		}
 	}
 };
