@@ -7,8 +7,8 @@
 #include <sstream>
 #include <map>
 
-#include "SDL.h"
-#include "SDL_mixer.h"
+//#include "SDL.h"
+//#include "SDL_mixer.h"
 
 #include "MediaManager.hpp"
 #include "Game.hpp"
@@ -48,11 +48,11 @@ class MyGame:public Game {
 		mainMenuSign = new Image(this, "../res/mainMenuSign.bmp");
 		quitSign = new Image(this, "../res/quitSign.bmp");
 		
-		//Player spawn at 1000, 1000 to avoid camera issues
-		player = new Player(this, "../res/playerSprite", 10, 1, 1000, 1000);
-		
 		Enemy *newEnemy = new Enemy(this, "../res/outlawSprite", 10, 300, 1000, 150, 4, 1, 1000, 500);
 		enemies.push_back(newEnemy);
+		
+		//Player spawn at 1000, 1000 to avoid camera issues
+		player = new Player(this, "../res/playerSprite", 10, 4, 1000, 1000);
 		
 	}
 	

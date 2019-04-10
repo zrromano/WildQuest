@@ -10,16 +10,6 @@ class Sprite:public Animation {
 	bool dead, friendly, wallCollision, spriteCollision;
 	SDL_Rect size, spriteHitBox;
 	public:
-	bool within(float otherX, float otherY){
-		return x<=otherX && otherX<=x+size.w && y<=otherY && otherY<=y+size.h;
-	}
-	/*bool collidesWith(Sprite &other){
-		SDL_Rect them = other.getSize();
-		return within(other.x, other.y) || 
-				within(other.x + them.w, other.y) ||
-				within(other.x + them.w, other.y + them.h) ||
-				within(other.x, other.y + them.h);
-	}*/
 	Sprite(Game *g, string filename, int count=1, int fps=30, float _x=0.0, float _y=0.0, float _dx=0.0, float _dy=0.0, float spriteX=0.0, float spriteY=0.0):
 	  Animation(g, filename, count, fps, spriteX, spriteY){
 		x = _x;
@@ -99,8 +89,10 @@ class Sprite:public Animation {
 		if(spriteCollision) ret = true;
 		return ret;
 	}
+	
 	bool within(float otherX, float otherY){
 		return x<=otherX && otherX<=x+size.w && y<=otherY && otherY<=y+size.h;
+		
 	}
 	bool collidesWith(Sprite &other){
 		spriteCollision = false;
