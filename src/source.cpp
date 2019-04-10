@@ -7,8 +7,8 @@
 #include <sstream>
 #include <map>
 
-//#include "SDL.h"
-//#include "SDL_mixer.h"
+#include "SDL.h"
+#include "SDL_mixer.h"
 
 #include "MediaManager.hpp"
 #include "Game.hpp"
@@ -28,6 +28,7 @@ using namespace std;
 class MyGame:public Game {
 	Image *background, *TitleScreenBackground, *playSign, *pauseScreenBackground, *pauseLogo, *resumeImage, *mainMenuSign, *quitSign;
 	TillingEngine *tEngine;
+	Mix_Chunk *shot, *background_music;
 	Player *player;
 	SDL_Rect camera, level_dimentions;
 	SceneState *scene;
@@ -47,6 +48,14 @@ class MyGame:public Game {
 		resumeImage = new Image(this, "../res/resumeSign.bmp");
 		mainMenuSign = new Image(this, "../res/mainMenuSign.bmp");
 		quitSign = new Image(this, "../res/quitSign.bmp");
+		
+		shot = Mix_LoadWAV("../res/Audio/Gunshot.wav");
+		background_music = Mix_LoadWAV("../res/Audio/Western-Inside-Loop.wav");
+		Mix_VolumeChunk(shot, 8);
+		Mix_VolumeChunk(background_music, 8);
+		
+		//TODO:  MOVE THIS MIX TO A DIFFERENT LOCATION
+		Mix_PlayChannel(-1,background_music,0);
 		
 		Enemy *newEnemy = new Enemy(this, "../res/outlawSprite", 10, 300, 1000, 150, 4, 1, 1000, 500);
 		enemies.push_back(newEnemy);
@@ -117,6 +126,7 @@ class MyGame:public Game {
 											5);
 			projectiles.push_back(projectile);
 			player->shoot();
+			Mix_PlayChannel(-1,shot,0);
 		}
 		else if(keystate[SDL_SCANCODE_LEFT] && player->canShoot()){
 			player->setFrame(1);
@@ -128,6 +138,7 @@ class MyGame:public Game {
 											5);
 			projectiles.push_back(projectile);
 			player->shoot();
+			Mix_PlayChannel(-1,shot,0);
 		}
 		else if(keystate[SDL_SCANCODE_DOWN] && player->canShoot()){
 			player->setFrame(2);
@@ -139,6 +150,7 @@ class MyGame:public Game {
 											5);
 			projectiles.push_back(projectile);
 			player->shoot();
+			Mix_PlayChannel(-1,shot,0);
 		}
 		else if(keystate[SDL_SCANCODE_UP] && player->canShoot()){
 			player->setFrame(3);
@@ -150,6 +162,7 @@ class MyGame:public Game {
 											5);
 			projectiles.push_back(projectile);
 			player->shoot();
+			Mix_PlayChannel(-1,shot,0);
 		} else { player->noShoot(); }
 	}
 	

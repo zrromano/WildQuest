@@ -6,7 +6,7 @@
 #include <string>
 
 #include "SDL.h"
-//#include "SDL_mixer.h"
+#include "SDL_mixer.h"
 
 using namespace std;
 
@@ -27,7 +27,7 @@ class Game{
 		Level_Dimentions.w = Level_Width;
 		Level_Dimentions.h = Level_Height;
 		GameCamera = {0, 0, width, height};
-		SDL_Init(SDL_INIT_VIDEO);
+		SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO);
 		
 		window = NULL;
 		renderer = NULL;
@@ -55,7 +55,7 @@ class Game{
 		}
 		cout << "renderer created" << endl;
 		keystate = SDL_GetKeyboardState(NULL);
-		/*int flags = 0;
+		int flags = 0;
 		int initted = Mix_Init(flags);
 		if(initted & flags != flags) {
 		   //eror message
@@ -63,11 +63,11 @@ class Game{
 		int audio = Mix_OpenAudio(MIX_DEFAULT_FREQUENCY, MIX_DEFAULT_FORMAT, 2, 2048);
 		if(audio == -1){
 			//error message
-		}*/
+		}
 	}
 	~Game(){
-		//Mix_CloseAudio();
-		//Mix_Quit();
+		Mix_CloseAudio();
+		Mix_Quit();
 		SDL_DestroyWindow(window);
 		SDL_Quit();
 	}
