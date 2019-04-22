@@ -8,7 +8,7 @@ class Sprite:public Animation {
 	float x,y,dx,dy,ax,ay;
 	int gw,gh;
 	bool dead, friendly, wallCollision, spriteCollision;
-	SDL_Rect size;
+	SDL_Rect size, spriteHitBox;
 	public:
 	Sprite(Game *g, string filename, int count=1, int fps=30, float _x=0.0, float _y=0.0, float _dx=0.0, float _dy=0.0, float spriteX=0.0, float spriteY=0.0):
 	  Animation(g, filename, count, fps, spriteX, spriteY){
@@ -17,8 +17,9 @@ class Sprite:public Animation {
 		dx = _dx;
 		dy = _dy;
 		SDL_Rect resolution = g->getResolution();
-		gw = resolution.w;
-		gh = resolution.h;
+		SDL_Rect level_dimentions = g->getLevelDimentions();
+		gw = level_dimentions.w;
+		gh = level_dimentions.h;
 		dead = false;
 		size = getSize();
 	}
@@ -28,7 +29,12 @@ class Sprite:public Animation {
 		dx=(float)((rand()% (40*100))-2000)/100.0;
 		dy=(float)((rand()% (40*100))-2000)/100.0;
 	}
-	void update(float dt /* in ms */, int setFrame=-1){
+	bool collision(){
+		bool ret = false;
+		if(wallCollision) ret = true;
+		return ret;
+	}
+	void update(float dt /* in ms */, int setFrame=-1, bool tileCollision=false){
 		if(wallCollision) wallCollision = false;
 		if(!dead){
 		//Animation::update(dt, setFrame);
@@ -59,6 +65,9 @@ class Sprite:public Animation {
 			dx = 0;
 			x = gw-size.w;
 		}
+		else if(tileCollision){
+			cout << "Collision with tile!" << endl;
+		}
 	}
 	}
 	void Render(Game *g, int setX=-1, int setY=-1){
@@ -69,7 +78,7 @@ class Sprite:public Animation {
 		}
 		else if (!dead){
 			//cout << "pre-render" << endl;
-			Animation::Render(g,(int)x,(int)y);
+			Animation::Render(g,(int)x, (int)y);
 			//cout << "Sprite rendered at " << x << " " << y << endl;
 		}
 	}
@@ -80,8 +89,10 @@ class Sprite:public Animation {
 		if(spriteCollision) ret = true;
 		return ret;
 	}
+	
 	bool within(float otherX, float otherY){
 		return x<=otherX && otherX<=x+size.w && y<=otherY && otherY<=y+size.h;
+		
 	}
 	bool collidesWith(Sprite &other){
 		spriteCollision = false;
@@ -111,4 +122,8 @@ class Sprite:public Animation {
 	float getY() { return y; }
 	float getW() { return size.w; }
 	float getH() { return size.h; }
+	SDL_Rect getHitBox(){
+		spriteHitBox = {(int)x, (int)y, size.w, size.h};
+		return spriteHitBox;
+	}
 };
