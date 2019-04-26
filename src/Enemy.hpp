@@ -28,7 +28,7 @@ class Enemy:public Sprite{
 	
 	void update(float dt /* in ms */, int playerX, int playerY, int setFrame=-1){
 		if( abs(distance(this->getX(), this->getY(), playerX, playerY)) < attackRange ){
-			cout << "player in attack range" << endl;
+			//cout << "player in attack range" << endl;
 			slowDown();
 		}
 		 /*else if( bulletComingTowardMe )

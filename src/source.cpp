@@ -48,7 +48,8 @@ class MyGame:public Game {
 		resumeImage = new Image(this, "../res/resumeSign.bmp");
 		mainMenuSign = new Image(this, "../res/mainMenuSign.bmp");
 		quitSign = new Image(this, "../res/quitSign.bmp");
-		
+		Projectile *initProjectile = new Projectile(this, "../res/bullet", true);
+		projectiles.push_back(initProjectile);
 		shot = Mix_LoadWAV("../res/Audio/Gunshot.wav");
 		background_music = Mix_LoadWAV("../res/Audio/Western-Inside-Loop.wav");
 		Mix_VolumeChunk(shot, 8);
@@ -269,6 +270,7 @@ class MyGame:public Game {
 					camera.y = level_dimentions.h - camera.h;
 				}
 				this->setGameCameraPos(camera);
+				
 				for(int i = 0; i < projectiles.size(); i++)
 					projectiles[i]->update(dt);
 				for(int i = 0; i < projectiles.size(); i++){
@@ -276,13 +278,20 @@ class MyGame:public Game {
 						for(int j = 0; j < enemies.size(); j++)
 							enemies[j]->hitByProjectile(projectiles[i]);
 					}
-				for(int i = 0; i < projectiles.size(); i++){
+				 /* vector<int>::reverse_iterator rit;
+				for(rit = projectiles.rbegin(); rit!=projectiles.rend(); ++rit){
+					if(rit->isDead())
+						projectiles.erase(rit);
+					else
+						rit->update(dt);
+				} */
+				 for(int i = 0; i < projectiles.size(); i++){
 					if(projectiles[i]->isDead()){
 						projectiles.erase(projectiles.begin() + i);
 					}
 					else	
 						projectiles[i]->update(dt);
-				}
+				} 
 				for(int i = 0; i < enemies.size(); i++){
 					if(enemies[i]->isDead()){
 						enemies.erase(enemies.begin() + i);
