@@ -21,8 +21,8 @@ class Player:public Sprite{
 		this->setFriendly(true);
 	}
 	
-	void update(float dt /* in ms */, int setFrame=-1, bool tileCollision=false){
-		Sprite::update(dt, setFrame, tileCollision);
+	void update(float dt /* in ms */, int setFrame=-1, bool Collision=false, SDL_Rect CollidedTile={-1,-1,-1,-1}){
+		Sprite::update(dt, setFrame, Collision, CollidedTile);
 		if (currentHealth <= 0){
 			this->kill();
 		}

@@ -29,12 +29,12 @@ class Sprite:public Animation {
 		dx=(float)((rand()% (40*100))-2000)/100.0;
 		dy=(float)((rand()% (40*100))-2000)/100.0;
 	}
-	bool collision(){
+	/* bool collisioncheck(){
 		bool ret = false;
 		if(wallCollision) ret = true;
 		return ret;
-	}
-	void update(float dt /* in ms */, int setFrame=-1, bool tileCollision=false){
+	} */
+	void update(float dt /* in ms */, int setFrame=-1, bool collision=false, SDL_Rect CollidedTile={-1,-1,-1,-1}){
 		if(wallCollision) wallCollision = false;
 		if(!dead){
 		//Animation::update(dt, setFrame);
@@ -65,9 +65,30 @@ class Sprite:public Animation {
 			dx = 0;
 			x = gw-size.w;
 		}
-		else if(tileCollision){
-			cout << "Collision with tile!" << endl;
-		}
+		if(collision){
+			if(dx > 0 && x < CollidedTile.x){
+				cout << "Collision with tile! positive x velocity: " << dx << endl;
+				dx = -dx;
+				x -= 1;
+			}
+			else if(dx < 0 && x > (CollidedTile.x )){
+				cout << "Collision with tile! negative x velocity: " << dx << endl;
+				dx = -dx;
+				x += 1;
+			}
+			if(dy != 0 ){
+				if(dy < 0 && y < (CollidedTile.y + CollidedTile.h)){
+					cout << "Collision with tile! negative y velocity: " << dy << endl;
+					dy = -dy;
+					y += 10;
+				}
+				else{
+					cout << "Collision with tile! positive y velocity: " << dy << endl;
+					dy = -dy;
+					y -= 15;
+				}
+			}
+		}		
 	}
 	}
 	void Render(Game *g, int setX=-1, int setY=-1){

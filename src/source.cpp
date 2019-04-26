@@ -61,7 +61,7 @@ class MyGame:public Game {
 		enemies.push_back(newEnemy);
 		
 		//Player spawn at 1000, 1000 to avoid camera issues
-		player = new Player(this, "../res/playerSprite", 10, 4, 1000, 1000);
+		player = new Player(this, "../res/playerSprite", 10, 4, 1000, 1000, 1000);
 		
 	}
 	
@@ -248,7 +248,7 @@ class MyGame:public Game {
 			
 			case Running: 
 				//Check if player is colliding with a tile
-				player->update(dt, player->getFrame(), tEngine->checkCollision(player->getHitBox()));
+				player->update(dt, player->getFrame(), tEngine->checkCollision(player->getHitBox()), tEngine->getCollidedTile());
 				//Camera Centered on the Player
 				camera.x = player->getX() + (player->getW() / 2) - (camera.w / 2);
 				camera.y = player->getY() + (player->getH() / 2) - (camera.h / 2);

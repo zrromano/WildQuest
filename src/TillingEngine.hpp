@@ -28,6 +28,7 @@ class TillingEngine{
 	
 	SDL_Rect Level_Dimentions;
 	SDL_Rect Tile_Clip[ TOTAL_TILE_SPRITES ];
+	SDL_Rect CollidedTile;
 	
 	vector < Tile_Image_Pair > tiles;
 	
@@ -129,9 +130,12 @@ class TillingEngine{
 		{
 			if( (tiles[i].second->getTileType() >= DEV_TILE_BLUE) && (tiles[i].second->getTileType() <= DEV_TILE_BROWN))
 			{
-				if(CollisionCheck(mBox, tiles[i].second->getMBox())) 
+				if(CollisionCheck(mBox, tiles[i].second->getMBox())){ 
+					CollidedTile = tiles[i].second->getMBox();
 					return true;
+				}
 			}
 		}
 	}
+	SDL_Rect getCollidedTile(){return CollidedTile; }
 };
