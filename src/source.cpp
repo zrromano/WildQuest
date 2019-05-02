@@ -70,6 +70,8 @@ class MyGame:public Game {
 	//1 = true = pressed
 	//0 = false = released
 	void keyboardHandler(SDL_Event *event){
+		bool expectedXCollision = false;
+		bool expectedYCollision = false;
 		//Escape key - exit game loop
 		//note: Should be changed to open in-game menu with an exit game option
 		if(keystate[SDL_SCANCODE_ESCAPE]){
@@ -85,17 +87,19 @@ class MyGame:public Game {
 			}
 			//setInGameLoop(false);
 		}
+		
 		//A key - move left
 		if(keystate[SDL_SCANCODE_A]){
-			if(player->getDx() > -250)
-				player->accelerateX(-10);
-		}
+				if(player->getDx() > -250)
+					player->accelerateX(-10);
+			}
 		else if(player->getDx() < 0)	
 			player->accelerateX(5);
+			
 		//D key - move right	
 		if(keystate[SDL_SCANCODE_D]){
-			if(player->getDx() < 250){
-				player->accelerateX(10);
+				if(player->getDx() < 250){
+					player->accelerateX(10);
 			}
 		}
 		else if(player->getDx() > 0)	

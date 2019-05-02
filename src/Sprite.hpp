@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Animation.hpp"
+#include <Windows.h>
 
 using namespace std;
 
@@ -66,28 +67,32 @@ class Sprite:public Animation {
 			x = gw-size.w;
 		}
 		if(collision){
-			if(dx > 0 && x < CollidedTile.x){
+			//Moving Right
+			if(dx > 0 && x < CollidedTile.x && dy == 0){
 				cout << "Collision with tile! positive x velocity: " << dx << endl;
 				dx = -dx;
 				x -= 1;
 			}
-			else if(dx < 0 && x > (CollidedTile.x )){
+			//Moving Left
+			else if(dx < 0 && x > (CollidedTile.x ) && dy == 0){
 				cout << "Collision with tile! negative x velocity: " << dx << endl;
 				dx = -dx;
 				x += 1;
 			}
-			if(dy != 0 ){
-				if(dy < 0 && y < (CollidedTile.y + CollidedTile.h)){
-					cout << "Collision with tile! negative y velocity: " << dy << endl;
-					dy = -dy;
-					y += 10;
-				}
-				else{
-					cout << "Collision with tile! positive y velocity: " << dy << endl;
-					dy = -dy;
-					y -= 15;
-				}
+			//Moving Down
+			else if(dy > 0 && (y + size.h) <= (CollidedTile.y + 20) && dx == 0){
+				cout << "Collision with tile! negative y velocity: " << dy << endl;
+				dy = -dy;
+				y -= 1;
 			}
+			//Moving Up
+			else if(dy < 0 && dx == 0){
+				cout << "Collision with tile! positive y velocity: " << dy << endl;
+				dy = -dy;
+				y += 1;
+			}
+			cout << x << ", " << y << endl;
+			
 		}		
 	}
 	}
@@ -129,6 +134,8 @@ class Sprite:public Animation {
 	void accelerateY(float ddy) { dy += ddy; }
 	void setDx(float _dx){ dx = _dx; }
 	void setDy(float _dy){ dy = _dy; }
+	void setX(float _x){x = _x; }
+	void setY(float _y){ y = _y; }
 	void setFriendly(bool _friendly){ friendly = _friendly; }
 	void setSpriteCollision(bool _collision){ spriteCollision = _collision; }
 	void kill(){ dead = true; }
