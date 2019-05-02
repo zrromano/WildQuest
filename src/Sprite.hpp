@@ -86,7 +86,7 @@ class Sprite:public Animation {
 				y -= 1;
 			}
 			//Moving Up
-			else if(dy < 0 && dx == 0){
+			else if(dy < 0 && y > (CollidedTile.y + (CollidedTile.h - 20))&& dx == 0){
 				cout << "Collision with tile! positive y velocity: " << dy << endl;
 				dy = -dy;
 				y += 1;
