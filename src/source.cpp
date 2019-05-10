@@ -28,7 +28,7 @@ using namespace std;
 class MyGame:public Game {
 	Image *background, *TitleScreenBackground, *playSign, *pauseScreenBackground, *pauseLogo, *resumeImage, *mainMenuSign, *quitSign;
 	TillingEngine *tEngine;
-	Mix_Chunk *shot, *background_music;
+	Mix_Chunk *shot, *background_music, *footsteps;
 	Player *player;
 	SDL_Rect camera, level_dimentions;
 	SceneState *scene;
@@ -49,13 +49,15 @@ class MyGame:public Game {
 		mainMenuSign = new Image(this, "../res/mainMenuSign.bmp");
 		quitSign = new Image(this, "../res/quitSign.bmp");
 		
+		Mix_AllocateChannels(16);
 		shot = Mix_LoadWAV("../res/Audio/Gunshot.wav");
+		footsteps = Mix_LoadWAV("../res/Audio/footsteps.wav");
 		background_music = Mix_LoadWAV("../res/Audio/Western-Inside-Loop.wav");
 		Mix_VolumeChunk(shot, 8);
 		Mix_VolumeChunk(background_music, 8);
-		
+		Mix_VolumeChunk(footsteps,8);
 		//TODO:  MOVE THIS MIX TO A DIFFERENT LOCATION
-		Mix_PlayChannel(-1,background_music,0);
+		Mix_PlayChannel(1,background_music,0);
 		
 		Enemy *newEnemy = new Enemy(this, "../res/outlawSprite", 10, 300, 1000, 150, 4, 1, 1000, 500);
 		enemies.push_back(newEnemy);
@@ -86,6 +88,10 @@ class MyGame:public Game {
 			//setInGameLoop(false);
 		}
 		//A key - move left
+		if(player->getDx()!=0 || player->getDy()!=0){
+			Mix_PlayChannel(-1,footsteps,0);
+		}
+			
 		if(keystate[SDL_SCANCODE_A]){
 			if(player->getDx() > -250)
 				player->accelerateX(-10);
@@ -126,7 +132,7 @@ class MyGame:public Game {
 											5);
 			projectiles.push_back(projectile);
 			player->shoot();
-			Mix_PlayChannel(-1,shot,0);
+			Mix_PlayChannel(2,shot,0);
 		}
 		else if(keystate[SDL_SCANCODE_LEFT] && player->canShoot()){
 			player->setFrame(1);
@@ -138,7 +144,7 @@ class MyGame:public Game {
 											5);
 			projectiles.push_back(projectile);
 			player->shoot();
-			Mix_PlayChannel(-1,shot,0);
+			Mix_PlayChannel(2,shot,0);
 		}
 		else if(keystate[SDL_SCANCODE_DOWN] && player->canShoot()){
 			player->setFrame(2);
@@ -150,7 +156,7 @@ class MyGame:public Game {
 											5);
 			projectiles.push_back(projectile);
 			player->shoot();
-			Mix_PlayChannel(-1,shot,0);
+			Mix_PlayChannel(2,shot,0);
 		}
 		else if(keystate[SDL_SCANCODE_UP] && player->canShoot()){
 			player->setFrame(3);
@@ -162,7 +168,7 @@ class MyGame:public Game {
 											5);
 			projectiles.push_back(projectile);
 			player->shoot();
-			Mix_PlayChannel(-1,shot,0);
+			Mix_PlayChannel(2,shot,0);
 		} else { player->noShoot(); }
 	}
 	

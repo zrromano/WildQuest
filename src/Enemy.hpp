@@ -3,6 +3,8 @@
 #include <Math.h>
 #include "Sprite.hpp"
 #include "Projectile.hpp"
+#include "SDL_mixer.h"
+
 
 class Enemy:public Sprite{
 	int lastShot; //game ticks since last shot
@@ -12,6 +14,7 @@ class Enemy:public Sprite{
 	int attackRange; //Range the enemy will shoot at the player
 	int aggroRange; //Range the enemy will begin to chase the player
 	int maxSpeed;
+	Mix_Chunk *getsShot;
 	
 	public:
 	Enemy(Game *g, string filename, int _maxHealth=1, int _attackRange=500, int _aggroRange=1000, int _maxSpeed=200, int count=4, int fps=1, float _x=0.0, float _y=0.0, float _dx=0.0, float _dy=0.0, float spriteX=0.0, float spriteY=0.0):
@@ -48,11 +51,15 @@ class Enemy:public Sprite{
 	
 	bool hitByProjectile(Projectile *other){
 		bool ret;
+		Mix_AllocateChannels(16);
+		getsShot = Mix_LoadWAV("../res/Audio/getsShot.wav");
+	Mix_VolumeChunk(getsShot,8);
 		SDL_Rect them = other->getSize();
 		if(other->isFriendly())
 			if (Sprite::within(other->getX(), other->getY()) || Sprite::within(other->getX() + them.w, other->getY()) ||
 			Sprite::within(other->getX() + them.w, other->getY() + them.h) || Sprite::within(other->getX(), other->getY() + them.h)){
 					ret = true;
+					Mix_PlayChannel(3,getsShot,0);
 					currentHealth -= other->getDamage();
 					other->kill();
 				}
