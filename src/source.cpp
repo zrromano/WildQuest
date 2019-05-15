@@ -57,7 +57,7 @@ class MyGame:public Game {
 		Mix_VolumeChunk(background_music, 8);
 		Mix_VolumeChunk(footsteps,8);
 		//TODO:  MOVE THIS MIX TO A DIFFERENT LOCATION
-		Mix_PlayChannel(1,background_music,0);
+		//Mix_PlayChannel(1,background_music,0);
 		
 		Enemy *newEnemy = new Enemy(this, "../res/outlawSprite", 10, 300, 1000, 150, 4, 1, 1000, 500);
 		enemies.push_back(newEnemy);
