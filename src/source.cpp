@@ -26,7 +26,7 @@
 using namespace std;
 
 class MyGame:public Game {
-	Image *background, *TitleScreenBackground, *playSign, *pauseScreenBackground, *pauseLogo, *resumeImage, *mainMenuSign, *quitSign;
+	Image *background, *TitleScreenBackground, *playSign, *pauseScreenBackground, *pauseLogo, *resumeImage, *mainMenuSign, *quitSign, *heathHeart, *miniMap;
 	TillingEngine *tEngine;
 	Mix_Chunk *shot, *background_music;
 	Player *player;
@@ -49,6 +49,8 @@ class MyGame:public Game {
 		resumeImage = new Image(this, "../res/resumeSign.bmp");
 		mainMenuSign = new Image(this, "../res/mainMenuSign.bmp");
 		quitSign = new Image(this, "../res/quitSign.bmp");
+		heathHeart = new Image(this, "../res/HealthHeart.bmp");
+		miniMap = new Image(this, "../res/map.bmp");
 		
 		shot = Mix_LoadWAV("../res/Audio/Gunshot.wav");
 		background_music = Mix_LoadWAV("../res/Audio/Western-Inside-Loop.wav");
@@ -95,7 +97,10 @@ class MyGame:public Game {
 			cout << "Current Collided Tile (x, y): " << currentCollidedTile.x << ", " << currentCollidedTile.y << endl;
 		}
 		
-		
+		// '-' Key - Debug to decrement player's health TODO remove
+		if(keystate[SDL_SCANCODE_MINUS]){
+			player->decrementHealth();
+		}
 		
 		//A key - move left
 		if(keystate[SDL_SCANCODE_A]){
@@ -331,6 +336,10 @@ class MyGame:public Game {
 					projectiles[i]->Render(this);
 				for(int i = 0; i < enemies.size(); i++)
 					enemies[i]->Render(this);
+				for(int i = 0; i < player->getHeath(); i++){
+					heathHeart->Render(this, camera.x + (camera.w / 2) - 600 + (40*i), camera.y + (camera.h / 2) + 300);
+				}
+				miniMap->Render(this, camera.x + (camera.w - 300), camera.y + 20 );
 				SDL_RenderPresent(renderer);
 			break;
 			case Pause:

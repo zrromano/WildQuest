@@ -44,4 +44,7 @@ class Player:public Sprite{
 	void shoot(){ lastShot = 0; }
 	void noShoot(){ lastShot += 1; }
 	bool canShoot(){ return lastShot >= shotDelay; }
+	int getHeath() {return currentHealth; }
+	//TODO Dev function to decrement player health
+	void decrementHealth() {currentHealth--;}
 };
