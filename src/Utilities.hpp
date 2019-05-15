@@ -21,10 +21,22 @@ bool CollisionCheck(SDL_Rect a, SDL_Rect b)
     bottomB = b.y + b.h;
 
     //If any of the sides from A are outside of B
-    if( bottomA <= topB ) return false;
-    if( topA >= bottomB ) return false;
-    if( rightA <= leftB ) return false;
-    if( leftA >= rightB ) return false;
+    if( bottomA <= topB ){ 
+		//cout << "BottomA: " << bottomA << " is less than TopB: " << topB << endl;
+		return false;
+		}
+    if( topA >= bottomB ){ 
+		//cout << "TopA: " << topA << " is greater than BottomB: " << bottomB << endl;
+		return false;
+		}
+    if( rightA <= leftB ){ 
+		//cout << "rightA: " << rightA << " is less than leftB: " << leftB << endl;
+		return false;
+		}
+    if( leftA >= rightB ){ 
+		//cout << "leftA: " << leftA << " is greater than rightB: " << rightB << endl;
+		return false;
+		}
 
     //If none of the sides from A are outside B
     return true;

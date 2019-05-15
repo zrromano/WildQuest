@@ -30,8 +30,9 @@ class MyGame:public Game {
 	TillingEngine *tEngine;
 	Mix_Chunk *shot, *background_music;
 	Player *player;
-	SDL_Rect camera, level_dimentions;
+	SDL_Rect camera, level_dimentions, cTile;
 	SceneState *scene;
+	bool pCollision;
 	vector<Projectile *> projectiles;
 	vector<Enemy *> enemies;
 	public:
@@ -87,6 +88,14 @@ class MyGame:public Game {
 			}
 			//setInGameLoop(false);
 		}
+		
+		//T Key - Current Debug TODO Remove
+		if(keystate[SDL_SCANCODE_T]){
+			SDL_Rect currentCollidedTile = tEngine->getCollidedTile();
+			cout << "Current Collided Tile (x, y): " << currentCollidedTile.x << ", " << currentCollidedTile.y << endl;
+		}
+		
+		
 		
 		//A key - move left
 		if(keystate[SDL_SCANCODE_A]){
@@ -252,7 +261,9 @@ class MyGame:public Game {
 			
 			case Running: 
 				//Check if player is colliding with a tile
-				player->update(dt, player->getFrame(), tEngine->checkCollision(player->getHitBox()), tEngine->getCollidedTile());
+				pCollision = tEngine->checkCollision(player->getHitBox());
+				cTile = tEngine->getCollidedTile();
+				player->update(dt, player->getFrame(), pCollision, cTile);
 				//Camera Centered on the Player
 				camera.x = player->getX() + (player->getW() / 2) - (camera.w / 2);
 				camera.y = player->getY() + (player->getH() / 2) - (camera.h / 2);

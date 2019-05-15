@@ -125,13 +125,13 @@ class TillingEngine{
 	}
 	
 	bool checkCollision(SDL_Rect mBox){
-		bool collision = false;
 		for(int i = 0; i < TOTAL_TILES; i++)
 		{
 			if( (tiles[i].second->getTileType() >= DEV_TILE_BLUE) && (tiles[i].second->getTileType() <= DEV_TILE_BROWN))
 			{
 				if(CollisionCheck(mBox, tiles[i].second->getMBox())){ 
 					CollidedTile = tiles[i].second->getMBox();
+					cout << "Collision with collidable Tile (x,y): " << CollidedTile.x << ", " << CollidedTile.y << endl;
 					return true;
 				}
 			}
