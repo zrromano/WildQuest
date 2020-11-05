@@ -1,4 +1,4 @@
-# VideoGameDesign
+# Wild Quest
 Add a path in your build command so the .exe gets saved to the main directory when compiling.
 
 My build command as an example:
